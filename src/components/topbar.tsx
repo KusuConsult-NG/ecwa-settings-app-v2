@@ -30,10 +30,10 @@ export function Topbar() {
           
           <div className="hidden lg:block">
             <h1 className="text-xl font-semibold text-gray-900">
-              ECWA Settings Dashboard
+              ChurchFlow Dashboard
             </h1>
             <p className="text-sm text-gray-500">
-              Organization Management System
+              Church Management System
             </p>
           </div>
         </div>

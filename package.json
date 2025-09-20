@@ -1,7 +1,7 @@
 {
-  "name": "ecwa-settings-app-v2",
+  "name": "churchflow-app",
   "version": "2.0.0",
-  "description": "ECWA Settings Management System - Clean Version",
+  "description": "ChurchFlow - Church Management System",
   "private": true,
   "scripts": {
     "dev": "next dev",

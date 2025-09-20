@@ -61,7 +61,7 @@ const navigation = [
     name: "Leadership",
     items: [
       { name: "Executive", href: "/executive", icon: Shield },
-      { name: "Leader Login", href: "/verify-login", icon: UserCog },
+      { name: "Member Login", href: "/verify-login", icon: UserCog },
     ]
   },
   {

@@ -56,12 +56,12 @@ export default function HomePage() {
     <div className="space-y-8">
       {/* Hero Section */}
       <div className="ecwa-gradient rounded-lg p-8 text-white">
-        <h1 className="text-4xl font-bold mb-4">
-          Welcome to ECWA Settings
-        </h1>
-        <p className="text-xl mb-6 opacity-90">
-          Comprehensive financial and organizational management system for ECWA organizations
-        </p>
+            <h1 className="text-4xl font-bold mb-4">
+              Welcome to ChurchFlow
+            </h1>
+            <p className="text-xl mb-6 opacity-90">
+              Comprehensive church management system for modern congregations
+            </p>
         <div className="flex gap-4">
           <Button size="lg" className="bg-white text-primary-600 hover:bg-gray-100">
             Get Started
@@ -92,7 +92,7 @@ export default function HomePage() {
 
       {/* Features Grid */}
       <div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Key Features</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">Church Management Features</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((feature, index) => (
             <Card key={index} className="hover:shadow-lg transition-shadow duration-200">
@@ -124,11 +124,11 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Button className="h-20 flex flex-col gap-2">
               <FileText className="h-6 w-6" />
-              <span>Raise Expenditure</span>
+              <span>Add Offering</span>
             </Button>
             <Button className="h-20 flex flex-col gap-2" variant="outline">
               <Users className="h-6 w-6" />
-              <span>Add Staff Member</span>
+              <span>Add Member</span>
             </Button>
             <Button className="h-20 flex flex-col gap-2" variant="outline">
               <BarChart3 className="h-6 w-6" />
@@ -143,16 +143,16 @@ export default function HomePage() {
         <CardHeader>
           <CardTitle>Recent Activity</CardTitle>
           <CardDescription>
-            Latest updates and activities in your organization
+            Latest updates and activities in your church
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             {[
-              { action: "New expenditure approved", user: "John Doe", time: "2 hours ago", status: "success" },
-              { action: "Staff member added", user: "Jane Smith", time: "4 hours ago", status: "success" },
+              { action: "New offering recorded", user: "John Doe", time: "2 hours ago", status: "success" },
+              { action: "New member added", user: "Jane Smith", time: "4 hours ago", status: "success" },
               { action: "Report generated", user: "Mike Johnson", time: "1 day ago", status: "info" },
-              { action: "Payment processed", user: "Sarah Wilson", time: "2 days ago", status: "success" }
+              { action: "Donation processed", user: "Sarah Wilson", time: "2 days ago", status: "success" }
             ].map((activity, index) => (
               <div key={index} className="flex items-center gap-3 p-3 rounded-lg bg-gray-50">
                 <CheckCircle className="h-5 w-5 text-green-600" />

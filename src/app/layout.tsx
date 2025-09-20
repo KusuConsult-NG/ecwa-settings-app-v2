@@ -7,8 +7,8 @@ import { Topbar } from "@/components/topbar";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "ECWA Settings - Organization Management",
-  description: "Comprehensive financial and organizational management system for ECWA",
+  title: "ChurchFlow - Church Management System",
+  description: "Comprehensive church management system for modern congregations",
 };
 
 export default function RootLayout({
