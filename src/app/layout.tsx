@@ -2,10 +2,30 @@ import type { Metadata } from "next"
 import "./globals.css"
 import Image from "next/image"
 import ClientTopbar from "./topbar-client"
+import { 
+  Home, 
+  BarChart3, 
+  Receipt, 
+  Plus, 
+  DollarSign, 
+  Building2, 
+  FileText, 
+  Building, 
+  Settings, 
+  Users, 
+  CreditCard, 
+  Calendar, 
+  MessageSquare, 
+  Star, 
+  Shield, 
+  Search, 
+  UserCog, 
+  Lock
+} from "lucide-react"
 
 export const metadata: Metadata = {
-  title: "ECWA Settings",
-  description: "Organization settings management",
+  title: "ChurchFlow - Church Management System",
+  description: "Comprehensive church management system for modern congregations",
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -20,19 +40,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <div className="layout">
           <aside className="sidebar" id="sidebar">
             <div className="logo">
-              <Image src="/logo.svg" alt="ECWA Settings" width={32} height={32} />
-              <span>ECWA Settings</span>
+              <Image src="/logo.svg" alt="ChurchFlow" width={32} height={32} />
+              <span>ChurchFlow</span>
             </div>
             <nav className="nav" id="nav">
               {/* Main Navigation */}
               <div className="nav-section">
                 <div className="nav-section-title">Main</div>
                 <a href="/" className="nav-link">
-                  <span className="nav-icon">🏠</span>
+                  <Home className="nav-icon" size={20} />
                   <span>Home</span>
                 </a>
                 <a href="/dashboard" className="nav-link">
-                  <span className="nav-icon">📊</span>
+                  <BarChart3 className="nav-icon" size={20} />
                   <span>Dashboard</span>
                 </a>
               </div>
@@ -41,23 +61,23 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <div className="nav-section">
                 <div className="nav-section-title">Financial</div>
                 <a href="/expenditures" className="nav-link">
-                  <span className="nav-icon">🧾</span>
+                  <Receipt className="nav-icon" size={20} />
                   <span>Expenditures</span>
                 </a>
                 <a href="/expenditures/new" className="nav-link">
-                  <span className="nav-icon">➕</span>
-                  <span>Raise Expenditure</span>
+                  <Plus className="nav-icon" size={20} />
+                  <span>Add Expenditure</span>
                 </a>
                 <a href="/income" className="nav-link">
-                  <span className="nav-icon">💰</span>
+                  <DollarSign className="nav-icon" size={20} />
                   <span>Income</span>
                 </a>
                 <a href="/bank" className="nav-link">
-                  <span className="nav-icon">🏦</span>
+                  <Building2 className="nav-icon" size={20} />
                   <span>Bank Management</span>
                 </a>
                 <a href="/reports" className="nav-link">
-                  <span className="nav-icon">📈</span>
+                  <FileText className="nav-icon" size={20} />
                   <span>Reports</span>
                 </a>
               </div>
@@ -66,11 +86,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <div className="nav-section">
                 <div className="nav-section-title">Organizations</div>
                 <a href="/org" className="nav-link">
-                  <span className="nav-icon">🏢</span>
+                  <Building className="nav-icon" size={20} />
                   <span>Create Organization</span>
                 </a>
                 <a href="/organization-management" className="nav-link">
-                  <span className="nav-icon">⚙️</span>
+                  <Settings className="nav-icon" size={20} />
                   <span>Manage Organizations</span>
                 </a>
               </div>
@@ -79,23 +99,23 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <div className="nav-section">
                 <div className="nav-section-title">Human Resources</div>
                 <a href="/hr" className="nav-link">
-                  <span className="nav-icon">🧑‍💼</span>
+                  <Users className="nav-icon" size={20} />
                   <span>HR Dashboard</span>
                 </a>
                 <a href="/hr/staff" className="nav-link">
-                  <span className="nav-icon">👥</span>
+                  <Users className="nav-icon" size={20} />
                   <span>Staff Management</span>
                 </a>
                 <a href="/hr/payroll" className="nav-link">
-                  <span className="nav-icon">💳</span>
+                  <CreditCard className="nav-icon" size={20} />
                   <span>Payroll</span>
                 </a>
                 <a href="/hr/leave" className="nav-link">
-                  <span className="nav-icon">🏖️</span>
+                  <Calendar className="nav-icon" size={20} />
                   <span>Leave Management</span>
                 </a>
                 <a href="/hr/queries" className="nav-link">
-                  <span className="nav-icon">📨</span>
+                  <MessageSquare className="nav-icon" size={20} />
                   <span>Queries</span>
                 </a>
               </div>
@@ -104,15 +124,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <div className="nav-section">
                 <div className="nav-section-title">Leadership</div>
                 <a href="/executive" className="nav-link">
-                  <span className="nav-icon">⭐</span>
+                  <Star className="nav-icon" size={20} />
                   <span>Executive</span>
                 </a>
                 <a href="/agencies" className="nav-link">
-                  <span className="nav-icon">🏛️</span>
+                  <Shield className="nav-icon" size={20} />
                   <span>Agencies & Groups</span>
                 </a>
                 <a href="/verify-login" className="nav-link">
-                  <span className="nav-icon">🔐</span>
+                  <Lock className="nav-icon" size={20} />
                   <span>Leader Login</span>
                 </a>
               </div>
@@ -121,19 +141,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <div className="nav-section">
                 <div className="nav-section-title">System</div>
                 <a href="/audit" className="nav-link">
-                  <span className="nav-icon">🔍</span>
+                  <Search className="nav-icon" size={20} />
                   <span>Audit Logs</span>
                 </a>
                 <a href="/hr/user-roles" className="nav-link">
-                  <span className="nav-icon">👤</span>
+                  <UserCog className="nav-icon" size={20} />
                   <span>User Roles</span>
                 </a>
                 <a href="/hr/system-config" className="nav-link">
-                  <span className="nav-icon">⚙️</span>
+                  <Settings className="nav-icon" size={20} />
                   <span>System Config</span>
                 </a>
                 <a href="/hr/security" className="nav-link">
-                  <span className="nav-icon">🔒</span>
+                  <Lock className="nav-icon" size={20} />
                   <span>Security</span>
                 </a>
               </div>

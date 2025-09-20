@@ -68,17 +68,28 @@ a{color:var(--primary);text-decoration:none}
   transform: translateX(2px);
 }
 
+.nav-link:hover .nav-icon {
+  color: #FFFFFF;
+}
+
 .nav-link.active {
   background: rgba(255, 255, 255, 0.15);
   color: #FFFFFF;
   font-weight: 600;
 }
 
+.nav-link.active .nav-icon {
+  color: #FFFFFF;
+}
+
 .nav-icon {
   font-size: 1.125rem;
   width: 20px;
+  height: 20px;
   text-align: center;
   flex-shrink: 0;
+  color: #EAF2FF;
+  transition: color 0.2s ease;
 }
 
 .nav-link span:last-child {
@@ -475,6 +486,13 @@ html.theme-dark .sidebar-logo { background: rgba(255,255,255,0.04); border-botto
   font-size: 12px;
   font-weight: 500;
 }
+
+/* Utility classes */
+.text-primary { color: var(--primary) !important; }
+.text-success { color: var(--success) !important; }
+.text-warning { color: var(--warning) !important; }
+.text-danger { color: var(--danger) !important; }
+.text-muted { color: var(--muted) !important; }
 
 /* Tabs styling */
 .tabs {
