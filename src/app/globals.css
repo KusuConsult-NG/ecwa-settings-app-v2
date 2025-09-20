@@ -6,16 +6,30 @@
 
 @layer base {
   * {
-    @apply border-gray-200;
+    @apply border-gray-300;
   }
   body {
-    @apply bg-white text-gray-900;
+    @apply bg-gray-50 text-gray-900 font-sans;
   }
 }
 
-/* Custom ECWA Styles */
-.ecwa-gradient {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+@layer components {
+  /* Custom ChurchFlow Styles */
+  .churchflow-gradient {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  }
+  
+  .card-shadow {
+    @apply shadow-sm hover:shadow-md transition-shadow duration-200;
+  }
+  
+  .btn-primary {
+    @apply bg-primary-600 text-white hover:bg-primary-700 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
+  }
+  
+  .btn-secondary {
+    @apply bg-gray-100 text-gray-900 hover:bg-gray-200 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2;
+  }
 }
 
 .ecwa-card {

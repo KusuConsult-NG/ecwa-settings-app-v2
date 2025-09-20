@@ -55,13 +55,13 @@ export default function HomePage() {
   return (
     <div className="space-y-8">
       {/* Hero Section */}
-      <div className="ecwa-gradient rounded-lg p-8 text-white">
-            <h1 className="text-4xl font-bold mb-4">
-              Welcome to ChurchFlow
-            </h1>
-            <p className="text-xl mb-6 opacity-90">
-              Comprehensive church management system for modern congregations
-            </p>
+      <div className="churchflow-gradient rounded-lg p-8 text-white">
+        <h1 className="text-4xl font-bold mb-4">
+          Welcome to ChurchFlow
+        </h1>
+        <p className="text-xl mb-6 opacity-90">
+          Comprehensive church management system for modern congregations
+        </p>
         <div className="flex gap-4">
           <Button size="lg" className="bg-white text-primary-600 hover:bg-gray-100">
             Get Started
