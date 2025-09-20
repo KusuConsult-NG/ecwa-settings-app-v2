@@ -12,7 +12,11 @@ export default function ClientTopbar() {
         cache: 'no-store'
       })
       const data = await response.json()
-      setMe(data.user || null)
+      if (data.success) {
+        setMe(data.user)
+      } else {
+        setMe(null)
+      }
     } catch (error) {
       console.error('Failed to fetch user:', error)
       setMe(null)
