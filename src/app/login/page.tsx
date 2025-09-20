@@ -74,13 +74,17 @@ export default function LoginPage() {
             <div className="form-group" style={{marginBottom: "1.5rem"}}>
               <label htmlFor="email">Email Address</label>
               <div style={{position: "relative"}}>
-                <Mail size={20} style={{
-                  position: "absolute", 
-                  left: "12px", 
-                  top: "50%", 
-                  transform: "translateY(-50%)", 
-                  color: "var(--muted)"
-                }} />
+                <Mail 
+                  size={20} 
+                  style={{
+                    position: "absolute", 
+                    left: "12px", 
+                    top: "50%", 
+                    transform: "translateY(-50%)", 
+                    color: "var(--muted)",
+                    zIndex: 1
+                  }} 
+                />
                 <input
                   type="email"
                   id="email"
@@ -89,7 +93,7 @@ export default function LoginPage() {
                   onChange={handleChange}
                   placeholder="Enter your email"
                   required
-                  style={{paddingLeft: "40px"}}
+                  style={{paddingLeft: "40px", position: "relative"}}
                 />
               </div>
             </div>
@@ -97,13 +101,17 @@ export default function LoginPage() {
             <div className="form-group" style={{marginBottom: "1.5rem"}}>
               <label htmlFor="password">Password</label>
               <div style={{position: "relative"}}>
-                <Lock size={20} style={{
-                  position: "absolute", 
-                  left: "12px", 
-                  top: "50%", 
-                  transform: "translateY(-50%)", 
-                  color: "var(--muted)"
-                }} />
+                <Lock 
+                  size={20} 
+                  style={{
+                    position: "absolute", 
+                    left: "12px", 
+                    top: "50%", 
+                    transform: "translateY(-50%)", 
+                    color: "var(--muted)",
+                    zIndex: 1
+                  }} 
+                />
                 <input
                   type={showPassword ? "text" : "password"}
                   id="password"
@@ -112,7 +120,7 @@ export default function LoginPage() {
                   onChange={handleChange}
                   placeholder="Enter your password"
                   required
-                  style={{paddingLeft: "40px", paddingRight: "40px"}}
+                  style={{paddingLeft: "40px", paddingRight: "40px", position: "relative"}}
                 />
                 <button
                   type="button"
@@ -125,7 +133,11 @@ export default function LoginPage() {
                     background: "none",
                     border: "none",
                     cursor: "pointer",
-                    color: "var(--muted)"
+                    color: "var(--muted)",
+                    zIndex: 1,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center"
                   }}
                 >
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
