@@ -1,0 +1,32 @@
+# Neon Database Configuration
+# Copy this file to .env.local for local development
+
+# Neon Database URL (for local development)
+# Get this from your Neon dashboard -> Connection Details
+DATABASE_URL=postgresql://username:password@ep-xxx-xxx.us-east-1.aws.neon.tech/neondb?sslmode=require
+
+# Neon Project ID (for GitHub Actions)
+# Get this from your Neon dashboard -> Project Settings
+NEON_PROJECT_ID=your-project-id-here
+
+# Neon API Key (for GitHub Actions)
+# Get this from your Neon dashboard -> Account Settings -> API Keys
+NEON_API_KEY=your-api-key-here
+
+# Optional: Neon Pooler URL (for production)
+# Use this for better connection pooling
+DATABASE_URL_WITH_POOLER=postgresql://username:password@ep-xxx-xxx-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require
+
+# Database Configuration
+DB_HOST=ep-xxx-xxx.us-east-1.aws.neon.tech
+DB_PORT=5432
+DB_NAME=neondb
+DB_USER=username
+DB_PASSWORD=password
+DB_SSL=true
+
+# Connection Pool Settings
+DB_POOL_MIN=2
+DB_POOL_MAX=10
+DB_POOL_IDLE_TIMEOUT=30000
+DB_POOL_ACQUIRE_TIMEOUT=60000
