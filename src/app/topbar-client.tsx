@@ -77,7 +77,7 @@ export default function ClientTopbar() {
     <div className="topbar">
       <div style={{display:"flex",gap:"0.75rem",alignItems:"center"}}>
         <button id="menuBtn" className="btn ghost" aria-label="Toggle Menu">☰</button>
-        <div className="badge"><Image src="/logo.svg" alt="ChurchFlow" width={20} height={20} /> {me?.name || 'CHURCHFLOW'}</div>
+        <div className="badge"><Image src="/logo.svg" alt="ChurchFlow" width={20} height={20} /> <span style={{color: 'var(--text)'}}>{me?.name || 'CHURCHFLOW'}</span></div>
       </div>
       <div style={{display:"flex",gap:"0.5rem",alignItems:"center"}}>
         {me && (
