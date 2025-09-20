@@ -11,7 +11,6 @@ import {
   Users,
   Building2,
   Shield,
-  Settings,
   CreditCard,
   Calendar,
   MessageSquare,
