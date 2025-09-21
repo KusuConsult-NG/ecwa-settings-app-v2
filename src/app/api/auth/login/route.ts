@@ -5,11 +5,14 @@ export const dynamic = 'force-dynamic'
 
 export async function POST(request: NextRequest) {
   try {
-    console.log('Login API called')
+    console.log('🔐 LOGIN API CALLED')
+    console.log('🔐 Request URL:', request.url)
+    console.log('🔐 Request method:', request.method)
+    console.log('🔐 Request headers:', Object.fromEntries(request.headers.entries()))
     
     // Parse request body
     const body = await request.json()
-    console.log('Request body:', body)
+    console.log('🔐 Request body:', body)
     
     // Basic validation
     const { email, password } = body

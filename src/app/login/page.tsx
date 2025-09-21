@@ -22,6 +22,7 @@ export default function LoginPage() {
 
     try {
       console.log('🚀 LOGIN ATTEMPT:', formData)
+      console.log('🌐 Making request to:', window.location.origin + '/api/auth/login')
       
       const response = await fetch('/api/auth/login', {
         method: 'POST',
@@ -31,6 +32,9 @@ export default function LoginPage() {
         body: JSON.stringify(formData),
       })
 
+      console.log('📡 RESPONSE STATUS:', response.status)
+      console.log('📡 RESPONSE HEADERS:', Object.fromEntries(response.headers.entries()))
+      
       const data = await response.json()
       console.log('📡 LOGIN RESPONSE:', data)
 
