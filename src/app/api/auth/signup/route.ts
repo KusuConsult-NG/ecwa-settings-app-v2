@@ -27,14 +27,16 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { name, email, password, role, organization, phone, address } = validation.data!
+    const { name, email, password, phone, address } = validation.data!
 
     const user = await createUser({
       name,
       email,
       password,
-      role,
-      organization
+      role: "Member", // Default role for new users
+      organization: "ChurchFlow", // Default organization
+      phone,
+      address
     })
 
     // Send email verification

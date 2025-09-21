@@ -13,6 +13,8 @@ export interface User {
   password: string
   role: string
   organization: string
+  phone?: string
+  address?: string
   createdAt: string
   lastLogin?: string
   isEmailVerified?: boolean

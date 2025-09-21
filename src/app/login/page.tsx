@@ -74,45 +74,20 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit}>
             <div className="form-group" style={{marginBottom: "1.5rem"}}>
               <label htmlFor="email">Email Address</label>
-              <div style={{position: "relative"}}>
-                <Mail 
-                  size={20} 
-                  style={{
-                    position: "absolute", 
-                    left: "12px", 
-                    top: "50%", 
-                    transform: "translateY(-50%)", 
-                    color: "var(--muted)",
-                    zIndex: 1
-                  }} 
-                />
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="Enter your email"
-                  required
-                  style={{paddingLeft: "40px", position: "relative"}}
-                />
-              </div>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="Enter your email"
+                required
+              />
             </div>
 
             <div className="form-group" style={{marginBottom: "1.5rem"}}>
               <label htmlFor="password">Password</label>
               <div style={{position: "relative"}}>
-                <Lock 
-                  size={20} 
-                  style={{
-                    position: "absolute", 
-                    left: "12px", 
-                    top: "50%", 
-                    transform: "translateY(-50%)", 
-                    color: "var(--muted)",
-                    zIndex: 1
-                  }} 
-                />
                 <input
                   type={showPassword ? "text" : "password"}
                   id="password"
@@ -121,7 +96,7 @@ export default function LoginPage() {
                   onChange={handleChange}
                   placeholder="Enter your password"
                   required
-                  style={{paddingLeft: "40px", paddingRight: "40px", position: "relative"}}
+                  style={{paddingRight: "40px"}}
                 />
                 <button
                   type="button"

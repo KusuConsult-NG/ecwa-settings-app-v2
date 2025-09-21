@@ -9,8 +9,8 @@ export default function SignupPage() {
     email: "",
     password: "",
     confirmPassword: "",
-    role: "Member",
-    organization: ""
+    phone: "",
+    address: ""
   })
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
@@ -98,103 +98,56 @@ export default function SignupPage() {
             <div className="row" style={{marginBottom: "1.5rem"}}>
               <div className="form-group">
                 <label htmlFor="name">Full Name</label>
-                <div style={{position: "relative"}}>
-                  <User 
-                    size={20} 
-                    style={{
-                      position: "absolute", 
-                      left: "12px", 
-                      top: "50%", 
-                      transform: "translateY(-50%)", 
-                      color: "var(--muted)",
-                      zIndex: 1
-                    }} 
-                  />
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    placeholder="Enter your full name"
-                    required
-                    style={{paddingLeft: "40px", position: "relative"}}
-                  />
-                </div>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="Enter your full name"
+                  required
+                />
               </div>
 
               <div className="form-group">
                 <label htmlFor="email">Email Address</label>
-                <div style={{position: "relative"}}>
-                  <Mail 
-                    size={20} 
-                    style={{
-                      position: "absolute", 
-                      left: "12px", 
-                      top: "50%", 
-                      transform: "translateY(-50%)", 
-                      color: "var(--muted)",
-                      zIndex: 1
-                    }} 
-                  />
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    placeholder="Enter your email"
-                    required
-                    style={{paddingLeft: "40px", position: "relative"}}
-                  />
-                </div>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="Enter your email"
+                  required
+                />
               </div>
             </div>
 
             <div className="row" style={{marginBottom: "1.5rem"}}>
               <div className="form-group">
-                <label htmlFor="role">Role</label>
-                <select
-                  id="role"
-                  name="role"
-                  value={formData.role}
+                <label htmlFor="phone">Phone Number</label>
+                <input
+                  type="tel"
+                  id="phone"
+                  name="phone"
+                  value={formData.phone}
                   onChange={handleChange}
+                  placeholder="Enter your phone number"
                   required
-                >
-                  <option value="Member">Member</option>
-                  <option value="Pastor">Pastor</option>
-                  <option value="Elder">Elder</option>
-                  <option value="Treasurer">Treasurer</option>
-                  <option value="Secretary">Secretary</option>
-                  <option value="Admin">Admin</option>
-                </select>
+                />
               </div>
 
               <div className="form-group">
-                <label htmlFor="organization">Organization</label>
-                <div style={{position: "relative"}}>
-                  <Building 
-                    size={20} 
-                    style={{
-                      position: "absolute", 
-                      left: "12px", 
-                      top: "50%", 
-                      transform: "translateY(-50%)", 
-                      color: "var(--muted)",
-                      zIndex: 1
-                    }} 
-                  />
-                  <input
-                    type="text"
-                    id="organization"
-                    name="organization"
-                    value={formData.organization}
-                    onChange={handleChange}
-                    placeholder="Church or organization name"
-                    required
-                    style={{paddingLeft: "40px", position: "relative"}}
-                  />
-                </div>
+                <label htmlFor="address">Address</label>
+                <input
+                  type="text"
+                  id="address"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  placeholder="Enter your address"
+                  required
+                />
               </div>
             </div>
 
@@ -202,17 +155,6 @@ export default function SignupPage() {
               <div className="form-group">
                 <label htmlFor="password">Password</label>
                 <div style={{position: "relative"}}>
-                  <Lock 
-                    size={20} 
-                    style={{
-                      position: "absolute", 
-                      left: "12px", 
-                      top: "50%", 
-                      transform: "translateY(-50%)", 
-                      color: "var(--muted)",
-                      zIndex: 1
-                    }} 
-                  />
                   <input
                     type={showPassword ? "text" : "password"}
                     id="password"
@@ -221,7 +163,7 @@ export default function SignupPage() {
                     onChange={handleChange}
                     placeholder="Create a password"
                     required
-                    style={{paddingLeft: "40px", paddingRight: "40px", position: "relative"}}
+                    style={{paddingRight: "40px"}}
                   />
                   <button
                     type="button"
@@ -249,17 +191,6 @@ export default function SignupPage() {
               <div className="form-group">
                 <label htmlFor="confirmPassword">Confirm Password</label>
                 <div style={{position: "relative"}}>
-                  <Lock 
-                    size={20} 
-                    style={{
-                      position: "absolute", 
-                      left: "12px", 
-                      top: "50%", 
-                      transform: "translateY(-50%)", 
-                      color: "var(--muted)",
-                      zIndex: 1
-                    }} 
-                  />
                   <input
                     type={showConfirmPassword ? "text" : "password"}
                     id="confirmPassword"
@@ -268,7 +199,7 @@ export default function SignupPage() {
                     onChange={handleChange}
                     placeholder="Confirm your password"
                     required
-                    style={{paddingLeft: "40px", paddingRight: "40px", position: "relative"}}
+                    style={{paddingRight: "40px"}}
                   />
                   <button
                     type="button"

@@ -40,8 +40,6 @@ export const signupSchema = z.object({
   email: emailSchema,
   password: passwordSchema,
   confirmPassword: z.string(),
-  role: z.enum(['Member', 'Pastor', 'Treasurer', 'Secretary', 'Admin']),
-  organization: organizationSchema,
   phone: phoneSchema,
   address: addressSchema
 }).refine((data) => data.password === data.confirmPassword, {
