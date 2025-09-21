@@ -12,6 +12,12 @@ class SendGridProvider implements EmailProvider {
   
   async sendEmail(to: string, subject: string, html: string, text: string): Promise<boolean> {
     try {
+      // Check if SendGrid API key is configured
+      if (!process.env.SENDGRID_API_KEY) {
+        console.warn('⚠️ SendGrid API key not configured, skipping email');
+        return false;
+      }
+
       const sgMail = require('@sendgrid/mail');
       sgMail.setApiKey(process.env.SENDGRID_API_KEY);
       
@@ -39,6 +45,12 @@ class SMTPProvider implements EmailProvider {
   
   async sendEmail(to: string, subject: string, html: string, text: string): Promise<boolean> {
     try {
+      // Check if SMTP credentials are configured
+      if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
+        console.warn('⚠️ SMTP credentials not configured, skipping email');
+        return false;
+      }
+
       const nodemailer = require('nodemailer');
       
       const transporter = nodemailer.createTransporter({

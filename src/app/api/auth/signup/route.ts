@@ -40,7 +40,13 @@ export async function POST(request: NextRequest) {
     })
 
     // Send email verification
-    const emailSent = await sendEmailVerification(user)
+    let emailSent = false
+    try {
+      emailSent = await sendEmailVerification(user)
+    } catch (emailError) {
+      console.warn('Email verification failed:', emailError)
+      // Continue with user creation even if email fails
+    }
     
     if (!emailSent) {
       console.warn('Failed to send verification email, but user was created')
@@ -77,6 +83,7 @@ export async function POST(request: NextRequest) {
     return response
   } catch (error) {
     console.error('Signup error:', error)
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace')
     
     if (error instanceof Error && error.message.includes('already exists')) {
       return NextResponse.json(
@@ -86,7 +93,11 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { success: false, message: 'Internal server error' },
+      { 
+        success: false, 
+        message: 'Internal server error',
+        error: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : String(error)) : undefined
+      },
       { status: 500 }
     )
   }
