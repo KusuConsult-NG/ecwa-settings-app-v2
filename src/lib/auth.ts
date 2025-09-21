@@ -213,6 +213,8 @@ export async function initializeDefaultUsers(): Promise<void> {
         password: 'admin123',
         role: 'Admin',
         organization: 'ChurchFlow',
+        phone: '+1234567890',
+        address: '123 Admin Street, City, State 12345',
         isEmailVerified: true // Pre-verify admin account
       },
       {
@@ -221,6 +223,8 @@ export async function initializeDefaultUsers(): Promise<void> {
         password: 'pastor123',
         role: 'Pastor',
         organization: 'Grace Assembly',
+        phone: '+1234567891',
+        address: '456 Pastor Avenue, City, State 12345',
         isEmailVerified: true // Pre-verify pastor account
       }
     ]
