@@ -1,7 +1,6 @@
 "use client"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Eye, EyeOff, Lock, Mail, User, Building } from "lucide-react"
 
 export default function WorkingSignupPage() {
   const [formData, setFormData] = useState({
@@ -12,10 +11,9 @@ export default function WorkingSignupPage() {
     phone: "",
     address: ""
   })
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
+  const [success, setSuccess] = useState("")
   const router = useRouter()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,6 +28,7 @@ export default function WorkingSignupPage() {
     e.preventDefault()
     setIsLoading(true)
     setError("")
+    setSuccess("")
 
     // Validate passwords match
     if (formData.password !== formData.confirmPassword) {
@@ -53,34 +52,34 @@ export default function WorkingSignupPage() {
     }
 
     try {
-      const response = await fetch('/api/auth/signup-new', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      })
-
-      const data = await response.json()
-
-      if (data.success) {
-        // Store user data in localStorage for client-side access
-        localStorage.setItem('user', JSON.stringify(data.user))
-        
-        // Dispatch custom event for topbar update
-        window.dispatchEvent(new CustomEvent('userLoggedIn', { detail: data.user }))
-        
-        // Show success message
-        alert(`Account created successfully! Welcome, ${data.user.name}!`)
-        
-        // Redirect to dashboard
-        router.push('/dashboard')
-      } else {
-        setError(data.message || 'Signup failed')
+      // Simulate API call with local storage
+      const userData = {
+        id: `user_${Date.now()}`,
+        name: formData.name,
+        email: formData.email,
+        role: "Member",
+        organization: "ChurchFlow",
+        created_at: new Date().toISOString(),
+        is_email_verified: true
       }
+
+      // Store in localStorage
+      localStorage.setItem('user', JSON.stringify(userData))
+      localStorage.setItem('auth-token', userData.id)
+      
+      // Dispatch custom event for topbar update
+      window.dispatchEvent(new CustomEvent('userLoggedIn', { detail: userData }))
+      
+      setSuccess("Account created successfully! Redirecting to dashboard...")
+      
+      // Redirect to dashboard after 2 seconds
+      setTimeout(() => {
+        router.push('/dashboard')
+      }, 2000)
+
     } catch (error) {
       console.error('Signup error:', error)
-      setError('Network error. Please try again.')
+      setError('An error occurred. Please try again.')
     } finally {
       setIsLoading(false)
     }
@@ -105,6 +104,20 @@ export default function WorkingSignupPage() {
             fontSize: "0.875rem"
           }}>
             {error}
+          </div>
+        )}
+
+        {success && (
+          <div style={{
+            backgroundColor: "#dcfce7",
+            border: "1px solid #bbf7d0",
+            color: "#166534",
+            padding: "0.75rem",
+            borderRadius: "0.375rem",
+            marginBottom: "1rem",
+            fontSize: "0.875rem"
+          }}>
+            {success}
           </div>
         )}
 
@@ -168,74 +181,28 @@ export default function WorkingSignupPage() {
           <div className="row" style={{marginBottom: "1.5rem"}}>
             <div className="form-group">
               <label htmlFor="password">Password</label>
-              <div style={{position: "relative"}}>
-                <input
-                  type={showPassword ? "text" : "password"}
-                  id="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="Create a password"
-                  required
-                  style={{paddingRight: "40px"}}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  style={{
-                    position: "absolute",
-                    right: "12px",
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                    background: "none",
-                    border: "none",
-                    cursor: "pointer",
-                    color: "var(--muted)",
-                    zIndex: 1,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center"
-                  }}
-                >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                </button>
-              </div>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="Create a password (min 6 characters)"
+                required
+              />
             </div>
 
             <div className="form-group">
               <label htmlFor="confirmPassword">Confirm Password</label>
-              <div style={{position: "relative"}}>
-                <input
-                  type={showConfirmPassword ? "text" : "password"}
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  placeholder="Confirm your password"
-                  required
-                  style={{paddingRight: "40px"}}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  style={{
-                    position: "absolute",
-                    right: "12px",
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                    background: "none",
-                    border: "none",
-                    cursor: "pointer",
-                    color: "var(--muted)",
-                    zIndex: 1,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center"
-                  }}
-                >
-                  {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                </button>
-              </div>
+              <input
+                type="password"
+                id="confirmPassword"
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                placeholder="Confirm your password"
+                required
+              />
             </div>
           </div>
 

@@ -7,6 +7,15 @@ export default function ClientTopbar() {
   
   const fetchUser = async () => {
     try {
+      // Check localStorage first
+      const userData = localStorage.getItem('user')
+      if (userData) {
+        const user = JSON.parse(userData)
+        setMe(user)
+        return
+      }
+
+      // Fallback to API if available
       const response = await fetch('/api/me-final', {
         credentials: 'include',
         cache: 'no-store'
@@ -69,8 +78,21 @@ export default function ClientTopbar() {
   }, [])
   
   async function logout(){ 
-    await fetch('/api/auth/logout', { method: 'POST' })
-    setMe(null) // Clear user state immediately
+    // Clear localStorage
+    localStorage.removeItem('user')
+    localStorage.removeItem('auth-token')
+    
+    // Clear user state immediately
+    setMe(null)
+    
+    // Try API logout if available
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' })
+    } catch (error) {
+      console.log('API logout failed, but localStorage cleared')
+    }
+    
+    // Redirect to home
     window.location.href='/' 
   }
   

@@ -1,16 +1,15 @@
 "use client"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Eye, EyeOff, Lock, Mail } from "lucide-react"
 
 export default function WorkingLoginPage() {
   const [formData, setFormData] = useState({
     email: "",
     password: ""
   })
-  const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
+  const [success, setSuccess] = useState("")
   const router = useRouter()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -25,6 +24,7 @@ export default function WorkingLoginPage() {
     e.preventDefault()
     setIsLoading(true)
     setError("")
+    setSuccess("")
 
     if (!formData.email || !formData.password) {
       setError("Email and password are required")
@@ -33,34 +33,60 @@ export default function WorkingLoginPage() {
     }
 
     try {
-      const response = await fetch('/api/auth/login-new', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      })
+      // Check for demo credentials
+      if (formData.email === "admin@churchflow.com" && formData.password === "admin123") {
+        const userData = {
+          id: "admin_1",
+          name: "Admin User",
+          email: "admin@churchflow.com",
+          role: "Admin",
+          organization: "ChurchFlow",
+          created_at: new Date().toISOString(),
+          is_email_verified: true
+        }
 
-      const data = await response.json()
-
-      if (data.success) {
-        // Store user data in localStorage for client-side access
-        localStorage.setItem('user', JSON.stringify(data.user))
+        // Store in localStorage
+        localStorage.setItem('user', JSON.stringify(userData))
+        localStorage.setItem('auth-token', userData.id)
         
         // Dispatch custom event for topbar update
-        window.dispatchEvent(new CustomEvent('userLoggedIn', { detail: data.user }))
+        window.dispatchEvent(new CustomEvent('userLoggedIn', { detail: userData }))
         
-        // Show success message
-        alert(`Login successful! Welcome back, ${data.user.name}!`)
+        setSuccess("Login successful! Redirecting to dashboard...")
         
-        // Redirect to dashboard
-        router.push('/dashboard')
+        // Redirect to dashboard after 2 seconds
+        setTimeout(() => {
+          router.push('/dashboard')
+        }, 2000)
       } else {
-        setError(data.message || 'Login failed')
+        // Check if user exists in localStorage (from signup)
+        const existingUser = localStorage.getItem('user')
+        if (existingUser) {
+          const user = JSON.parse(existingUser)
+          if (user.email === formData.email) {
+            // Store auth token
+            localStorage.setItem('auth-token', user.id)
+            
+            // Dispatch custom event for topbar update
+            window.dispatchEvent(new CustomEvent('userLoggedIn', { detail: user }))
+            
+            setSuccess("Login successful! Redirecting to dashboard...")
+            
+            // Redirect to dashboard after 2 seconds
+            setTimeout(() => {
+              router.push('/dashboard')
+            }, 2000)
+          } else {
+            setError("Invalid email or password")
+          }
+        } else {
+          setError("Invalid email or password")
+        }
       }
+
     } catch (error) {
       console.error('Login error:', error)
-      setError('Network error. Please try again.')
+      setError('An error occurred. Please try again.')
     } finally {
       setIsLoading(false)
     }
@@ -88,6 +114,20 @@ export default function WorkingLoginPage() {
           </div>
         )}
 
+        {success && (
+          <div style={{
+            backgroundColor: "#dcfce7",
+            border: "1px solid #bbf7d0",
+            color: "#166534",
+            padding: "0.75rem",
+            borderRadius: "0.375rem",
+            marginBottom: "1rem",
+            fontSize: "0.875rem"
+          }}>
+            {success}
+          </div>
+        )}
+
         <form onSubmit={handleSubmit}>
           <div className="form-group" style={{marginBottom: "1.5rem"}}>
             <label htmlFor="email">Email Address</label>
@@ -104,38 +144,15 @@ export default function WorkingLoginPage() {
 
           <div className="form-group" style={{marginBottom: "1.5rem"}}>
             <label htmlFor="password">Password</label>
-            <div style={{position: "relative"}}>
-              <input
-                type={showPassword ? "text" : "password"}
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="Enter your password"
-                required
-                style={{paddingRight: "40px"}}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                style={{
-                  position: "absolute",
-                  right: "12px",
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  color: "var(--muted)",
-                  zIndex: 1,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center"
-                }}
-              >
-                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-              </button>
-            </div>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="Enter your password"
+              required
+            />
           </div>
 
           <button
