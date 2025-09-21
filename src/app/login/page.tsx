@@ -62,12 +62,6 @@ export default function LoginPage() {
     }))
   }
 
-  const handleDemoLogin = () => {
-    setFormData({
-      email: "admin@churchflow.com",
-      password: "admin123"
-    })
-  }
 
   return (
     <div className="container">
@@ -150,21 +144,6 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <div style={{textAlign: "center", marginBottom: "1.5rem"}}>
-            <button
-              type="button"
-              onClick={handleDemoLogin}
-              className="btn secondary"
-              style={{marginBottom: "1rem"}}
-            >
-              Use Demo Credentials
-            </button>
-            <div style={{fontSize: "0.875rem", color: "var(--muted)"}}>
-              <p><strong>Demo Login:</strong></p>
-              <p>Email: admin@churchflow.com</p>
-              <p>Password: admin123</p>
-            </div>
-          </div>
 
           <div style={{textAlign: "center"}}>
             <p className="muted" style={{margin: "0 0 1rem 0"}}>
