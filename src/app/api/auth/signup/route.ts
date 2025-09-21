@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createUser, initializeDefaultUsers } from '@/lib/auth'
+import { createUser, initializeDefaultUsers, sendEmailVerification } from '@/lib/auth'
 
 export async function POST(request: NextRequest) {
   try {
@@ -30,27 +30,40 @@ export async function POST(request: NextRequest) {
       organization
     })
 
+    // Send email verification
+    const emailSent = await sendEmailVerification(user)
+    
+    if (!emailSent) {
+      console.warn('Failed to send verification email, but user was created')
+    }
+
     // Create response with user data
     const response = NextResponse.json({
       success: true,
-      message: 'Account created successfully',
+      message: emailSent 
+        ? 'Account created successfully. Please check your email for verification code.'
+        : 'Account created successfully. Please contact support for email verification.',
       user: {
         id: user.id,
         name: user.name,
         email: user.email,
         role: user.role,
         organization: user.organization,
-        createdAt: user.createdAt
-      }
+        createdAt: user.createdAt,
+        isEmailVerified: user.isEmailVerified || false
+      },
+      emailSent
     })
 
-    // Set HTTP-only cookie for server-side authentication
-    response.cookies.set('auth-token', user.id, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 7 // 7 days
-    })
+    // Only set cookie if email verification is not required or if user is pre-verified
+    if (user.isEmailVerified) {
+      response.cookies.set('auth-token', user.id, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 60 * 60 * 24 * 7 // 7 days
+      })
+    }
 
     return response
   } catch (error) {

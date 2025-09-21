@@ -14,6 +14,9 @@ export interface User {
   organization: string
   createdAt: string
   lastLogin?: string
+  isEmailVerified?: boolean
+  emailVerificationCode?: string
+  emailVerificationExpires?: string
 }
 
 // Ensure data directory exists
@@ -113,6 +116,86 @@ export async function authenticateUser(email: string, password: string): Promise
   return userWithoutPassword as User
 }
 
+// Generate email verification code
+export function generateEmailVerificationCode(): string {
+  return Math.floor(100000 + Math.random() * 900000).toString() // 6-digit code
+}
+
+// Generate email verification expiry
+export function getEmailVerificationExpiry(): string {
+  return new Date(Date.now() + 30 * 60 * 1000).toISOString() // 30 minutes
+}
+
+// Send email verification
+export async function sendEmailVerification(user: User): Promise<boolean> {
+  try {
+    const { sendVerificationEmail, getEmailTemplate } = await import('./email-verification')
+    
+    const code = generateEmailVerificationCode()
+    const expiresAt = getEmailVerificationExpiry()
+    
+    // Update user with verification code
+    const users = await loadUsers()
+    const userIndex = users.findIndex(u => u.id === user.id)
+    if (userIndex !== -1) {
+      users[userIndex].emailVerificationCode = code
+      users[userIndex].emailVerificationExpires = expiresAt
+      await saveUsers(users)
+    }
+    
+    // Send verification email
+    const template = getEmailTemplate('account_verification', {
+      userName: user.name,
+      organizationName: user.organization,
+      code,
+      role: user.role
+    })
+    
+    return await sendVerificationEmail(user.email, template)
+  } catch (error) {
+    console.error('Failed to send email verification:', error)
+    return false
+  }
+}
+
+// Verify email code
+export async function verifyEmailCode(email: string, code: string): Promise<{ success: boolean; message: string }> {
+  try {
+    const users = await loadUsers()
+    const user = users.find(u => u.email.toLowerCase() === email.toLowerCase())
+    
+    if (!user) {
+      return { success: false, message: 'User not found' }
+    }
+    
+    if (!user.emailVerificationCode || !user.emailVerificationExpires) {
+      return { success: false, message: 'No verification code found' }
+    }
+    
+    if (new Date() > new Date(user.emailVerificationExpires)) {
+      return { success: false, message: 'Verification code has expired' }
+    }
+    
+    if (user.emailVerificationCode !== code) {
+      return { success: false, message: 'Invalid verification code' }
+    }
+    
+    // Mark email as verified
+    const userIndex = users.findIndex(u => u.id === user.id)
+    if (userIndex !== -1) {
+      users[userIndex].isEmailVerified = true
+      users[userIndex].emailVerificationCode = undefined
+      users[userIndex].emailVerificationExpires = undefined
+      await saveUsers(users)
+    }
+    
+    return { success: true, message: 'Email verified successfully' }
+  } catch (error) {
+    console.error('Email verification failed:', error)
+    return { success: false, message: 'Verification failed' }
+  }
+}
+
 // Initialize with default admin user
 export async function initializeDefaultUsers(): Promise<void> {
   const users = await loadUsers()
@@ -125,14 +208,16 @@ export async function initializeDefaultUsers(): Promise<void> {
         email: 'admin@churchflow.com',
         password: 'admin123',
         role: 'Admin',
-        organization: 'ChurchFlow'
+        organization: 'ChurchFlow',
+        isEmailVerified: true // Pre-verify admin account
       },
       {
         name: 'Pastor John',
         email: 'pastor@churchflow.com',
         password: 'pastor123',
         role: 'Pastor',
-        organization: 'Grace Assembly'
+        organization: 'Grace Assembly',
+        isEmailVerified: true // Pre-verify pastor account
       }
     ]
 

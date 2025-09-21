@@ -49,14 +49,19 @@ export default function SignupPage() {
       const data = await response.json()
 
       if (data.success) {
-        // Store user data in localStorage for client-side access
-        localStorage.setItem('user', JSON.stringify(data.user))
-        
-        // Dispatch custom event for topbar update
-        window.dispatchEvent(new CustomEvent('userLoggedIn', { detail: data.user }))
-        
-        // Redirect to dashboard
-        router.push('/dashboard')
+        if (data.emailSent && !data.user.isEmailVerified) {
+          // Redirect to email verification page
+          router.push(`/verify-email?email=${encodeURIComponent(data.user.email)}`)
+        } else {
+          // Store user data in localStorage for client-side access
+          localStorage.setItem('user', JSON.stringify(data.user))
+          
+          // Dispatch custom event for topbar update
+          window.dispatchEvent(new CustomEvent('userLoggedIn', { detail: data.user }))
+          
+          // Redirect to dashboard
+          router.push('/dashboard')
+        }
       } else {
         setError(data.message || 'Signup failed')
       }
