@@ -8,12 +8,8 @@ const emailSchema = z.string()
   .max(255, "Email must be less than 255 characters")
 
 const passwordSchema = z.string()
-  .min(8, "Password must be at least 8 characters")
+  .min(6, "Password must be at least 6 characters")
   .max(128, "Password must be less than 128 characters")
-  .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-  .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-  .regex(/[0-9]/, "Password must contain at least one number")
-  .regex(/[^A-Za-z0-9]/, "Password must contain at least one special character")
 
 const nameSchema = z.string()
   .min(2, "Name must be at least 2 characters")
@@ -26,13 +22,12 @@ const organizationSchema = z.string()
   .regex(/^[a-zA-Z0-9\s&.,'-]+$/, "Organization name contains invalid characters")
 
 const phoneSchema = z.string()
-  .regex(/^[\+]?[1-9][\d]{0,15}$/, "Invalid phone number format")
-  .optional()
+  .min(1, "Phone number is required")
+  .regex(/^[\+]?[\d\s\-\(\)]{7,20}$/, "Invalid phone number format")
 
 const addressSchema = z.string()
   .min(10, "Address must be at least 10 characters")
   .max(500, "Address must be less than 500 characters")
-  .optional()
 
 // User validation schemas
 export const signupSchema = z.object({
