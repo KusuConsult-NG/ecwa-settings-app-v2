@@ -24,6 +24,18 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Check if email is verified
+    if (!user.isEmailVerified) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          message: 'Please verify your email address before logging in. Check your email for a verification code.',
+          requiresVerification: true 
+        },
+        { status: 403 }
+      )
+    }
+
     // Create response with user data
     const response = NextResponse.json({
       success: true,

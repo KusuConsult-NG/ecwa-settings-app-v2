@@ -239,17 +239,19 @@ export async function sendVerificationEmail(
   template: EmailTemplate
 ): Promise<boolean> {
   try {
-    console.log('📧 Sending verification email to:', email);
-    console.log('📧 Subject:', template.subject);
-    console.log('📧 Code:', template.text.match(/VERIFICATION CODE: (\d+)/)?.[1] || 'N/A');
+    if (process.env.NODE_ENV === 'development') {
+      console.log('📧 Sending verification email to:', email);
+      console.log('📧 Subject:', template.subject);
+      console.log('📧 Code:', template.text.match(/VERIFICATION CODE: (\d+)/)?.[1] || 'N/A');
+    }
     
     // Use real email service
     const success = await sendEmail(email, template.subject, template.html, template.text);
     
-    if (success) {
+    if (success && process.env.NODE_ENV === 'development') {
       console.log('✅ Verification email sent successfully');
-    } else {
-      console.log('❌ Failed to send verification email');
+    } else if (!success) {
+      console.error('❌ Failed to send verification email');
     }
     
     return success;

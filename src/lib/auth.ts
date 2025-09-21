@@ -1,6 +1,7 @@
 import { promises as fs } from 'fs'
 import path from 'path'
 import crypto from 'crypto'
+import bcrypt from 'bcryptjs'
 
 const DATA_DIR = path.join(process.cwd(), '.data')
 const USERS_FILE = path.join(DATA_DIR, 'users.json')
@@ -51,14 +52,15 @@ export async function saveUsers(users: User[]): Promise<void> {
   }
 }
 
-// Hash password
-export function hashPassword(password: string): string {
-  return crypto.createHash('sha256').update(password).digest('hex')
+// Hash password securely with bcrypt
+export async function hashPassword(password: string): Promise<string> {
+  const saltRounds = 12
+  return await bcrypt.hash(password, saltRounds)
 }
 
-// Verify password
-export function verifyPassword(password: string, hash: string): boolean {
-  return hashPassword(password) === hash
+// Verify password securely with bcrypt
+export async function verifyPassword(password: string, hash: string): Promise<boolean> {
+  return await bcrypt.compare(password, hash)
 }
 
 // Find user by email
@@ -80,7 +82,7 @@ export async function createUser(userData: Omit<User, 'id' | 'createdAt' | 'pass
   const newUser: User = {
     id: crypto.randomUUID(),
     ...userData,
-    password: hashPassword(userData.password),
+    password: await hashPassword(userData.password),
     createdAt: new Date().toISOString()
   }
 
@@ -99,7 +101,7 @@ export async function authenticateUser(email: string, password: string): Promise
     return null
   }
 
-  if (!verifyPassword(password, user.password)) {
+  if (!(await verifyPassword(password, user.password))) {
     return null
   }
 
