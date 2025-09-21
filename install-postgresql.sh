@@ -39,3 +39,4 @@ echo "🔗 You can now connect to your Neon database:"
 echo "psql 'postgresql://neondb_owner:npg_8iVZwHmaxgy7@ep-old-truth-admsvs0a-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require'"
 echo ""
 echo "📚 For more connection options, see NEON_BRANCH_SETUP.md"
+

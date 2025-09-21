@@ -222,3 +222,4 @@ POST /api/auth/resend-verification
 **Your ChurchFlow email system is now ready!** 🎉
 
 The same SendGrid setup from the original ECWA app is now fully integrated into ChurchFlow with enhanced templates and improved user experience.
+

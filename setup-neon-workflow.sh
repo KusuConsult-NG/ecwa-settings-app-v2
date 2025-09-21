@@ -107,3 +107,4 @@ echo ""
 echo "📚 For more information, see NEON_BRANCH_SETUP.md"
 echo ""
 echo "✨ Your ChurchFlow project is now ready for automated database branch management!"
+

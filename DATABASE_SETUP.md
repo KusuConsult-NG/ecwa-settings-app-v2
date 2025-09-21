@@ -231,3 +231,4 @@ psql 'postgresql://neondb_owner:npg_8iVZwHmaxgy7@ep-old-truth-admsvs0a-pooler.c-
 - [Node.js pg Documentation](https://node-postgres.com/)
 
 Your ChurchFlow database is ready to be set up! 🎉
+

@@ -34,3 +34,4 @@
 - Visit Vercel dashboard for project management
 
 **That's it! Your ChurchFlow app is ready to go! 🚀**
+

@@ -331,3 +331,4 @@ export default function NewBankAccountPage() {
     </div>
   )
 }
+

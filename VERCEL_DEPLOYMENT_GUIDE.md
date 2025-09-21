@@ -149,3 +149,4 @@ Once deployed, your ChurchFlow app will be:
 ---
 
 **Need help?** Check the troubleshooting section or contact support! 🚀
+

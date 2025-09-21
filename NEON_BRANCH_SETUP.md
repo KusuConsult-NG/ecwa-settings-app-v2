@@ -170,3 +170,4 @@ Use different settings for different environments:
 - **Schema Tracking**: Optional schema change visibility
 
 This setup ensures your ChurchFlow project has proper database isolation for all pull requests! 🎉
+
