@@ -1,30 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getAllBankAccounts, createBankAccount } from '@/lib/database-simple'
+
+export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {
   try {
-    // Mock bank data
-    const banks = [
-      {
-        id: '1',
-        name: 'First Bank of Nigeria',
-        accountNumber: '1234567890',
-        accountName: 'ECWA Jos DCC',
-        balance: 1500000,
-        status: 'active',
-        createdAt: '2024-01-15',
-        updatedAt: '2024-01-15'
-      },
-      {
-        id: '2',
-        name: 'Access Bank',
-        accountNumber: '0987654321',
-        accountName: 'ECWA Jos DCC',
-        balance: 750000,
-        status: 'active',
-        createdAt: '2024-01-20',
-        updatedAt: '2024-01-20'
-      }
-    ]
+    const banks = getAllBankAccounts()
 
     return NextResponse.json({
       success: true,
@@ -46,19 +27,22 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { name, accountNumber, accountName, balance } = body
+    const { name, accountNumber, balance, currency } = body
 
-    // Mock bank creation
-    const newBank = {
-      id: Date.now().toString(),
+    if (!name || !accountNumber || balance === undefined || !currency) {
+      return NextResponse.json({
+        success: false,
+        message: 'Name, accountNumber, balance, and currency are required'
+      }, { status: 400 })
+    }
+
+    const newBank = createBankAccount({
       name,
       accountNumber,
-      accountName,
-      balance: balance || 0,
-      status: 'active',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    }
+      balance: parseFloat(balance),
+      currency,
+      status: 'active'
+    })
 
     return NextResponse.json({
       success: true,

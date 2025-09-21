@@ -1,22 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { findUserByEmail, verifyPassword } from '@/lib/database-simple'
 
 export const dynamic = 'force-dynamic'
-
-// Simple in-memory user store (should match signup)
-let users: any[] = [
-  {
-    id: 'admin_1',
-    name: 'Admin User',
-    email: 'admin@churchflow.com',
-    password: 'admin123',
-    role: 'Admin',
-    organization: 'ChurchFlow',
-    phone: '+1234567890',
-    address: '123 Admin Street',
-    createdAt: new Date().toISOString(),
-    isEmailVerified: true
-  }
-]
 
 export async function POST(request: NextRequest) {
   try {
@@ -40,9 +25,9 @@ export async function POST(request: NextRequest) {
     }
     
     // Find user
-    const user = users.find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === password)
+    const user = findUserByEmail(email)
     
-    if (!user) {
+    if (!user || !verifyPassword(password, user.password)) {
       return NextResponse.json(
         { success: false, message: 'Invalid email or password' },
         { status: 401 }

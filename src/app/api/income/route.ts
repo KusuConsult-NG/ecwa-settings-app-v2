@@ -1,46 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getAllIncome, createIncome } from '@/lib/database-simple'
+
+export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {
   try {
-    // Mock income data
-    const incomeRecords = [
-      {
-        id: '1',
-        source: 'Sunday Offering',
-        amount: 150000,
-        date: '2024-01-15',
-        description: 'Weekly Sunday service offering',
-        category: 'Offering',
-        status: 'confirmed',
-        recordedBy: 'Pastor John',
-        createdAt: '2024-01-15',
-        updatedAt: '2024-01-15'
-      },
-      {
-        id: '2',
-        source: 'Tithe',
-        amount: 75000,
-        date: '2024-01-14',
-        description: 'Monthly tithe collection',
-        category: 'Tithe',
-        status: 'confirmed',
-        recordedBy: 'Pastor Jane',
-        createdAt: '2024-01-14',
-        updatedAt: '2024-01-14'
-      },
-      {
-        id: '3',
-        source: 'Special Offering',
-        amount: 200000,
-        date: '2024-01-12',
-        description: 'Building fund offering',
-        category: 'Special',
-        status: 'pending',
-        recordedBy: 'Pastor Mike',
-        createdAt: '2024-01-12',
-        updatedAt: '2024-01-12'
-      }
-    ]
+    const incomeRecords = getAllIncome()
 
     return NextResponse.json({
       success: true,
@@ -62,21 +27,22 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { source, amount, date, description, category } = body
+    const { source, amount, date, recordedBy } = body
 
-    // Mock income creation
-    const newIncome = {
-      id: Date.now().toString(),
+    if (!source || !amount || !date || !recordedBy) {
+      return NextResponse.json({
+        success: false,
+        message: 'Source, amount, date, and recordedBy are required'
+      }, { status: 400 })
+    }
+
+    const newIncome = createIncome({
       source,
       amount: parseFloat(amount),
       date,
-      description,
-      category,
-      status: 'pending',
-      recordedBy: 'Current User',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    }
+      recordedBy,
+      status: 'completed'
+    })
 
     return NextResponse.json({
       success: true,

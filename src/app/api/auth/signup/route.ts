@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { createUser, findUserByEmail, hashPassword } from '@/lib/database-simple'
 
 export const dynamic = 'force-dynamic'
-
-// Simple in-memory user store for testing
-let users: any[] = []
 
 export async function POST(request: NextRequest) {
   try {
@@ -55,7 +53,7 @@ export async function POST(request: NextRequest) {
     }
     
     // Check if user already exists
-    const existingUser = users.find(u => u.email.toLowerCase() === email.toLowerCase())
+    const existingUser = findUserByEmail(email)
     if (existingUser) {
       return NextResponse.json(
         { success: false, message: 'User with this email already exists' },
@@ -64,24 +62,21 @@ export async function POST(request: NextRequest) {
     }
     
     // Create new user
-    const newUser = {
-      id: `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    const newUser = createUser({
       name,
       email,
-      password, // In production, this should be hashed
+      password: hashPassword(password),
       role: "Member",
       organization: "ChurchFlow",
       phone,
       address,
-      createdAt: new Date().toISOString(),
-      isEmailVerified: false
-    }
+      isEmailVerified: true // Skip email verification for demo
+    })
     
-    users.push(newUser)
     console.log('User created:', newUser.id)
     
     // Return success response
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       message: 'Account created successfully!',
       user: {
@@ -94,6 +89,16 @@ export async function POST(request: NextRequest) {
         isEmailVerified: newUser.isEmailVerified
       }
     })
+    
+    // Set authentication cookie
+    response.cookies.set('auth-token', newUser.id, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 7 // 7 days
+    })
+    
+    return response
     
   } catch (error) {
     console.error('Signup error:', error)

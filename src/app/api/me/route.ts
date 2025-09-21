@@ -1,22 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { findUserById } from '@/lib/database-simple'
 
 export const dynamic = 'force-dynamic'
-
-// Simple in-memory user store (should match signup and login)
-let users: any[] = [
-  {
-    id: 'admin_1',
-    name: 'Admin User',
-    email: 'admin@churchflow.com',
-    password: 'admin123',
-    role: 'Admin',
-    organization: 'ChurchFlow',
-    phone: '+1234567890',
-    address: '123 Admin Street',
-    createdAt: new Date().toISOString(),
-    isEmailVerified: true
-  }
-]
 
 export async function GET(request: NextRequest) {
   try {
@@ -31,7 +16,7 @@ export async function GET(request: NextRequest) {
     }
     
     // Find user by ID
-    const user = users.find(u => u.id === authToken)
+    const user = findUserById(authToken)
     console.log('Found user:', user ? user.email : 'None')
     
     if (!user) {
