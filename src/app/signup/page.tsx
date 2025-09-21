@@ -78,10 +78,15 @@ export default function SignupPage() {
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setFormData(prev => ({
-      ...prev,
-      [e.target.name]: e.target.value
-    }))
+    console.log('Form field changed:', e.target.name, '=', e.target.value)
+    setFormData(prev => {
+      const newData = {
+        ...prev,
+        [e.target.name]: e.target.value
+      }
+      console.log('Updated form data:', newData)
+      return newData
+    })
   }
 
   return (
@@ -96,6 +101,14 @@ export default function SignupPage() {
           {error && (
             <div className="alert alert-error" style={{marginBottom: "1rem"}}>
               {error}
+            </div>
+          )}
+
+          {/* Debug: Show current form data */}
+          {process.env.NODE_ENV === 'development' && (
+            <div style={{marginBottom: "1rem", padding: "0.5rem", backgroundColor: "#f8f9fa", border: "1px solid #dee2e6", borderRadius: "4px", fontSize: "12px"}}>
+              <strong>Debug - Form Data:</strong>
+              <pre style={{margin: "0.25rem 0 0 0", fontSize: "11px"}}>{JSON.stringify(formData, null, 2)}</pre>
             </div>
           )}
 
