@@ -49,10 +49,12 @@ export default function TestSignupPage() {
     <div style={{ padding: '2rem', maxWidth: '600px', margin: '0 auto' }}>
       <h1>Test Signup Form</h1>
       
-      <div style={{ marginBottom: '1rem', padding: '1rem', backgroundColor: '#f8f9fa', border: '1px solid #dee2e6', borderRadius: '4px' }}>
-        <h3>Current Form Data:</h3>
-        <pre style={{ fontSize: '12px', margin: 0 }}>{JSON.stringify(formData, null, 2)}</pre>
-      </div>
+      {typeof window !== 'undefined' && (
+        <div style={{ marginBottom: '1rem', padding: '1rem', backgroundColor: '#f8f9fa', border: '1px solid #dee2e6', borderRadius: '4px' }}>
+          <h3>Current Form Data:</h3>
+          <pre style={{ fontSize: '12px', margin: 0 }}>{JSON.stringify(formData, null, 2)}</pre>
+        </div>
+      )}
       
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: '1rem' }}>
