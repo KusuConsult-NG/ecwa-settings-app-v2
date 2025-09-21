@@ -7,7 +7,7 @@ export default function ClientTopbar() {
   
   const fetchUser = async () => {
     try {
-      const response = await fetch('/api/me', {
+      const response = await fetch('/api/me-new', {
         credentials: 'include',
         cache: 'no-store'
       })
