@@ -111,15 +111,25 @@ export function createUser(userData: Omit<User, 'id' | 'createdAt'>): User {
     createdAt: new Date().toISOString()
   }
   users.push(user)
+  console.log('📝 USER CREATED:', { id: user.id, email: user.email, totalUsers: users.length })
   return user
 }
 
 export function findUserByEmail(email: string): User | undefined {
-  return users.find(u => u.email.toLowerCase() === email.toLowerCase())
+  const user = users.find(u => u.email.toLowerCase() === email.toLowerCase())
+  console.log('🔍 FIND USER BY EMAIL:', { email, found: !!user, totalUsers: users.length })
+  if (user) {
+    console.log('👤 USER FOUND:', { id: user.id, email: user.email, role: user.role })
+  } else {
+    console.log('❌ USER NOT FOUND. Available users:', users.map(u => ({ id: u.id, email: u.email })))
+  }
+  return user
 }
 
 export function findUserById(id: string): User | undefined {
-  return users.find(u => u.id === id)
+  const user = users.find(u => u.id === id)
+  console.log('🔍 FIND USER BY ID:', { id, found: !!user, totalUsers: users.length })
+  return user
 }
 
 export function getAllUsers(): User[] {
