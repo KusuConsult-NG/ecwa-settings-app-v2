@@ -31,5 +31,18 @@
     "createdAt": "2025-09-21T00:48:48.796Z",
     "emailVerificationCode": "513650",
     "emailVerificationExpires": "2025-09-21T01:18:48.919Z"
+  },
+  {
+    "id": "c7fbba12-8a57-4335-89dc-6438043120bf",
+    "name": "Test User",
+    "email": "test2@example.com",
+    "password": "$2b$12$UeKbhq/XCRvLdgjej9l3..TNQsrqCi1Nv8M9ud0uukfqx9wWQE.ei",
+    "role": "Member",
+    "organization": "ChurchFlow",
+    "phone": "1234567890",
+    "address": "123 Test St",
+    "createdAt": "2025-09-21T00:50:16.766Z",
+    "emailVerificationCode": "723412",
+    "emailVerificationExpires": "2025-09-21T01:20:16.805Z"
   }
 ]
