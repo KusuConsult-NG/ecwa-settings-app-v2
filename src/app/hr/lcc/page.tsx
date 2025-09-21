@@ -86,7 +86,7 @@ export default function LCCPage() {
           lastActivity: '2023-12-20'
         }
       ]
-      setLCCs(mockLCCs)
+      setLccs(mockLCCs)
     } catch (error) {
       console.error('Error loading LCCs:', error)
     } finally {
