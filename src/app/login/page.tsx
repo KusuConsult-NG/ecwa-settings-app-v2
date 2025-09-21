@@ -1,8 +1,7 @@
 "use client"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Eye, EyeOff, Mail, Lock, ArrowLeft } from "lucide-react"
-import Image from "next/image"
+import { Eye, EyeOff } from "lucide-react"
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
@@ -71,116 +70,110 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="auth-container">
-      <div className="auth-card">
-        <div className="auth-header">
-          <div className="logo">
-            <Image src="/logo.svg" alt="ChurchFlow" width={48} height={48} />
-            <h1>ChurchFlow</h1>
+    <div className="container">
+      <div className="hero" style={{minHeight: "calc(100vh - 56px)"}}>
+        <div className="auth card" style={{maxWidth: "400px", margin: "2rem auto"}}>
+          <div style={{textAlign: "center", marginBottom: "2rem"}}>
+            <h2>Welcome Back</h2>
+            <p className="muted">Sign in to your ChurchFlow account</p>
           </div>
-          <h2>Welcome Back</h2>
-          <p className="muted">
-            Sign in to your account to continue managing your church operations.
-          </p>
-        </div>
 
-        {error && (
-          <div className="alert alert-error">
-            <strong>Error:</strong> {error}
-          </div>
-        )}
+          {error && (
+            <div className="alert alert-error" style={{marginBottom: "1rem"}}>
+              {error}
+            </div>
+          )}
 
-        {success && (
-          <div className="alert alert-success">
-            <strong>Success:</strong> {success}
-          </div>
-        )}
+          {success && (
+            <div className="alert alert-success" style={{marginBottom: "1rem"}}>
+              {success}
+            </div>
+          )}
 
-        <form onSubmit={handleSubmit} className="auth-form">
-          <div className="form-group">
-            <label htmlFor="email">Email Address</label>
-            <div className="input-group">
-              <Mail className="input-icon" size={20} />
+          <form onSubmit={handleSubmit}>
+            <div className="form-group" style={{marginBottom: "1.5rem"}}>
+              <label htmlFor="email">Email Address</label>
               <input
                 type="email"
                 id="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="Enter your email address"
+                placeholder="Enter your email"
                 required
-                className="input-with-icon"
               />
             </div>
-          </div>
 
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
-            <div className="input-group">
-              <Lock className="input-icon" size={20} />
-              <input
-                type={showPassword ? "text" : "password"}
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="Enter your password"
-                required
-                className="input-with-icon"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="password-toggle"
-                aria-label={showPassword ? "Hide password" : "Show password"}
-              >
-                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-              </button>
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            className="btn primary full-width"
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <div className="loading-spinner">
-                <div className="spinner"></div>
-                Signing In...
+            <div className="form-group" style={{marginBottom: "1.5rem"}}>
+              <label htmlFor="password">Password</label>
+              <div style={{position: "relative"}}>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="Enter your password"
+                  required
+                  style={{paddingRight: "40px"}}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{
+                    position: "absolute",
+                    right: "12px",
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    color: "var(--muted)",
+                    zIndex: 1,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center"
+                  }}
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
               </div>
-            ) : (
-              "Sign In"
-            )}
-          </button>
-        </form>
+            </div>
 
-        <div className="auth-footer">
-          <div className="demo-section">
+            <button
+              type="submit"
+              className="btn primary block"
+              disabled={isLoading}
+              style={{marginBottom: "1rem"}}
+            >
+              {isLoading ? "Signing In..." : "Sign In"}
+            </button>
+          </form>
+
+          <div style={{textAlign: "center", marginBottom: "1.5rem"}}>
             <button
               type="button"
               onClick={handleDemoLogin}
-              className="demo-button"
+              className="btn secondary"
+              style={{marginBottom: "1rem"}}
             >
-              🚀 Use Demo Credentials
+              Use Demo Credentials
             </button>
-            <div className="demo-info">
+            <div style={{fontSize: "0.875rem", color: "var(--muted)"}}>
               <p><strong>Demo Login:</strong></p>
               <p>Email: admin@churchflow.com</p>
               <p>Password: admin123</p>
             </div>
           </div>
 
-          <div className="auth-links">
-            <p className="muted">
+          <div style={{textAlign: "center"}}>
+            <p className="muted" style={{margin: "0 0 1rem 0"}}>
               Don't have an account?{" "}
-              <a href="/signup" className="link-button">
-                Create one here
+              <a href="/signup" style={{color: "var(--primary)", textDecoration: "none"}}>
+                Sign up here
               </a>
             </p>
-            
-            <a href="/" className="back-link">
-              <ArrowLeft size={16} />
+            <a href="/" className="btn ghost">
               Back to Home
             </a>
           </div>
