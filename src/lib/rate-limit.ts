@@ -83,7 +83,7 @@ class SimpleRateLimit {
 
 // Rate limiters for different endpoints
 export const authRateLimit = new SimpleRateLimit(5, 15 * 60 * 1000, 'auth') // 5 attempts per 15 minutes
-export const signupRateLimit = new SimpleRateLimit(3, 60 * 60 * 1000, 'signup') // 3 signups per hour
+export const signupRateLimit = new SimpleRateLimit(100, 60 * 1000, 'signup') // 100 signups per minute for testing
 export const verificationRateLimit = new SimpleRateLimit(10, 60 * 60 * 1000, 'verification') // 10 verification attempts per hour
 export const generalRateLimit = new SimpleRateLimit(100, 60 * 1000, 'general') // 100 requests per minute
 
