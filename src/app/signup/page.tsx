@@ -58,6 +58,7 @@ export default function SignupPage() {
         } else {
           // Store user data in localStorage for client-side access
           localStorage.setItem('user', JSON.stringify(data.user))
+          localStorage.setItem('auth-token', data.user.id)
           
           // Dispatch custom event for topbar update
           window.dispatchEvent(new CustomEvent('userLoggedIn', { detail: data.user }))

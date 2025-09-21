@@ -53,29 +53,40 @@ export default function HomePage() {
     }
 
     try {
-      const userData = {
-        id: `user_${Date.now()}`,
-        name: formData.name,
-        email: formData.email,
-        role: "Member",
-        organization: "ChurchFlow",
-        created_at: new Date().toISOString(),
-        is_email_verified: true
+      // Use the actual signup API
+      const response = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        // Store user data in localStorage for client-side access
+        localStorage.setItem('user', JSON.stringify(data.user))
+        localStorage.setItem('auth-token', data.user.id)
+        
+        // Dispatch custom event for topbar update
+        window.dispatchEvent(new CustomEvent('userLoggedIn', { detail: data.user }))
+        
+        setSuccess("Account created successfully! Redirecting to dashboard...")
+        
+        setTimeout(() => {
+          router.push('/dashboard')
+        }, 2000)
+      } else {
+        if (data.errors && data.errors.length > 0) {
+          setError(data.errors.map((err: any) => err.message).join(', '))
+        } else {
+          setError(data.message || 'Signup failed')
+        }
       }
 
-      localStorage.setItem('user', JSON.stringify(userData))
-      localStorage.setItem('auth-token', userData.id)
-      
-      window.dispatchEvent(new CustomEvent('userLoggedIn', { detail: userData }))
-      
-      setSuccess("Account created successfully! Redirecting to dashboard...")
-      
-      setTimeout(() => {
-        router.push('/dashboard')
-      }, 2000)
-
     } catch (error) {
-      setError('An error occurred. Please try again.')
+      setError('Network error. Please try again.')
     } finally {
       setIsLoading(false)
     }
@@ -94,21 +105,27 @@ export default function HomePage() {
     }
 
     try {
-      if (formData.email === "admin@churchflow.com" && formData.password === "admin123") {
-        const userData = {
-          id: "admin_1",
-          name: "Admin User",
-          email: "admin@churchflow.com",
-          role: "Admin",
-          organization: "ChurchFlow",
-          created_at: new Date().toISOString(),
-          is_email_verified: true
-        }
+      // Use the actual login API
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password
+        }),
+      })
 
-        localStorage.setItem('user', JSON.stringify(userData))
-        localStorage.setItem('auth-token', userData.id)
+      const data = await response.json()
+
+      if (data.success) {
+        // Store user data in localStorage for client-side access
+        localStorage.setItem('user', JSON.stringify(data.user))
+        localStorage.setItem('auth-token', data.user.id)
         
-        window.dispatchEvent(new CustomEvent('userLoggedIn', { detail: userData }))
+        // Dispatch custom event for topbar update
+        window.dispatchEvent(new CustomEvent('userLoggedIn', { detail: data.user }))
         
         setSuccess("Login successful! Redirecting to dashboard...")
         
@@ -116,11 +133,11 @@ export default function HomePage() {
           router.push('/dashboard')
         }, 2000)
       } else {
-        setError("Invalid email or password")
+        setError(data.message || 'Invalid email or password')
       }
 
     } catch (error) {
-      setError('An error occurred. Please try again.')
+      setError('Network error. Please try again.')
     } finally {
       setIsLoading(false)
     }
