@@ -2,6 +2,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Eye, EyeOff, Lock, Mail } from "lucide-react"
+import { LoadingButton } from "@/components/LoadingSpinner"
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
@@ -145,14 +146,14 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <button
+            <LoadingButton
               type="submit"
-              className="btn primary block"
-              disabled={isLoading}
+              loading={isLoading}
+              className="primary block"
               style={{marginBottom: "1rem"}}
             >
               {isLoading ? "Signing In..." : "Sign In"}
-            </button>
+            </LoadingButton>
           </form>
 
           <div style={{textAlign: "center"}}>

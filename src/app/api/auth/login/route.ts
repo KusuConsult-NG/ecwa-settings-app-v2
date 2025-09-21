@@ -1,19 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { authenticateUser, initializeDefaultUsers } from '@/lib/auth'
+import { loginSchema, validateData, sanitizeInput } from '@/lib/validation'
+import { withRateLimit, authRateLimit } from '@/lib/rate-limit'
 
 export async function POST(request: NextRequest) {
+  return withRateLimit(authRateLimit, 'login', request, async () => {
   try {
     // Initialize default users if needed
     await initializeDefaultUsers()
 
-    const { email, password } = await request.json()
-
-    if (!email || !password) {
+    // Parse and sanitize request body
+    const body = await request.json()
+    const sanitizedBody = sanitizeInput(body)
+    
+    // Validate request body
+    const validation = validateData(loginSchema, sanitizedBody)
+    
+    if (!validation.success) {
       return NextResponse.json(
-        { success: false, message: 'Email and password are required' },
+        { 
+          success: false, 
+          message: 'Validation failed',
+          errors: validation.errors
+        },
         { status: 400 }
       )
     }
+
+    const { email, password } = validation.data!
 
     const user = await authenticateUser(email, password)
 
@@ -66,4 +80,5 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     )
   }
+  })
 }

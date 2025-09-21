@@ -1,16 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { verifyEmailCode } from '@/lib/auth'
+import { emailVerificationSchema, validateData, sanitizeInput } from '@/lib/validation'
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, code } = await request.json()
-
-    if (!email || !code) {
+    // Parse and sanitize request body
+    const body = await request.json()
+    const sanitizedBody = sanitizeInput(body)
+    
+    // Validate request body
+    const validation = validateData(emailVerificationSchema, sanitizedBody)
+    
+    if (!validation.success) {
       return NextResponse.json(
-        { success: false, message: 'Email and verification code are required' },
+        { 
+          success: false, 
+          message: 'Validation failed',
+          errors: validation.errors
+        },
         { status: 400 }
       )
     }
+
+    const { email, code } = validation.data!
 
     const result = await verifyEmailCode(email, code)
 

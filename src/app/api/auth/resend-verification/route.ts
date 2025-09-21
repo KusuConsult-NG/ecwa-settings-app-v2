@@ -1,16 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { findUserByEmail, sendEmailVerification } from '@/lib/auth'
+import { resendVerificationSchema, validateData, sanitizeInput } from '@/lib/validation'
 
 export async function POST(request: NextRequest) {
   try {
-    const { email } = await request.json()
-
-    if (!email) {
+    // Parse and sanitize request body
+    const body = await request.json()
+    const sanitizedBody = sanitizeInput(body)
+    
+    // Validate request body
+    const validation = validateData(resendVerificationSchema, sanitizedBody)
+    
+    if (!validation.success) {
       return NextResponse.json(
-        { success: false, message: 'Email is required' },
+        { 
+          success: false, 
+          message: 'Validation failed',
+          errors: validation.errors
+        },
         { status: 400 }
       )
     }
+
+    const { email } = validation.data!
 
     const user = await findUserByEmail(email)
 

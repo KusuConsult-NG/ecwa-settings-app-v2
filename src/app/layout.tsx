@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import "./globals.css"
 import Image from "next/image"
 import ClientTopbar from "./topbar-client"
+import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { 
   Home, 
   BarChart3, 
@@ -160,7 +161,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </nav>
           </aside>
           <main className="content">
-            {children}
+            <ErrorBoundary>
+              {children}
+            </ErrorBoundary>
           </main>
         </div>
         

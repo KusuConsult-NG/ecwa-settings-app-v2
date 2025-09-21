@@ -1,26 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createUser, initializeDefaultUsers, sendEmailVerification } from '@/lib/auth'
+import { signupSchema, validateData, sanitizeInput } from '@/lib/validation'
+import { withRateLimit, signupRateLimit } from '@/lib/rate-limit'
 
 export async function POST(request: NextRequest) {
+  return withRateLimit(signupRateLimit, 'signup', request, async () => {
   try {
     // Initialize default users if needed
     await initializeDefaultUsers()
 
-    const { name, email, password, role, organization } = await request.json()
-
-    if (!name || !email || !password || !role || !organization) {
+    // Parse and sanitize request body
+    const body = await request.json()
+    const sanitizedBody = sanitizeInput(body)
+    
+    // Validate request body
+    const validation = validateData(signupSchema, sanitizedBody)
+    
+    if (!validation.success) {
       return NextResponse.json(
-        { success: false, message: 'All fields are required' },
+        { 
+          success: false, 
+          message: 'Validation failed',
+          errors: validation.errors
+        },
         { status: 400 }
       )
     }
 
-    if (password.length < 6) {
-      return NextResponse.json(
-        { success: false, message: 'Password must be at least 6 characters long' },
-        { status: 400 }
-      )
-    }
+    const { name, email, password, role, organization, phone, address } = validation.data!
 
     const user = await createUser({
       name,
@@ -81,4 +88,5 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     )
   }
+  })
 }
