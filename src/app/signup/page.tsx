@@ -38,8 +38,6 @@ export default function SignupPage() {
     }
 
     try {
-      console.log('🚀 FRONTEND SIGNUP ATTEMPT:', formData)
-      
       const response = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: {
@@ -49,7 +47,6 @@ export default function SignupPage() {
       })
 
       const data = await response.json()
-      console.log('📡 FRONTEND SIGNUP RESPONSE:', data)
 
       if (data.success) {
         if (data.emailSent && !data.user.isEmailVerified) {

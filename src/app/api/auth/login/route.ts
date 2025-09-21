@@ -26,21 +26,8 @@ export async function POST(request: NextRequest) {
     
     // Find user
     const user = findUserByEmail(email)
-    console.log('🔐 LOGIN ATTEMPT:', { email, userFound: !!user })
     
-    if (!user) {
-      console.log('❌ LOGIN FAILED: User not found')
-      return NextResponse.json(
-        { success: false, message: 'Invalid email or password' },
-        { status: 401 }
-      )
-    }
-    
-    const passwordValid = verifyPassword(password, user.password)
-    console.log('🔐 PASSWORD CHECK:', { passwordValid, storedPassword: user.password.substring(0, 10) + '...' })
-    
-    if (!passwordValid) {
-      console.log('❌ LOGIN FAILED: Invalid password')
+    if (!user || !verifyPassword(password, user.password)) {
       return NextResponse.json(
         { success: false, message: 'Invalid email or password' },
         { status: 401 }
