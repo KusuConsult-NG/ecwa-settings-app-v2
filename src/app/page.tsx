@@ -8,9 +8,9 @@ export default function HomePage() {
         <p className="muted">Financial management, member tracking, event planning, and administration—all in one integrated platform.</p>
         <div style={{marginTop:"1rem",display:"flex",gap:".5rem",justifyContent:"center"}}>
           {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-          <a className="btn primary" href="/signup">Get Started</a>
+          <a className="btn primary" href="/signup-simple">Get Started</a>
           {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-          <a className="btn secondary" href="/login">Log In</a>
+          <a className="btn secondary" href="/login-simple">Log In</a>
         </div>
         <div style={{marginTop:"2rem"}} className="grid cols-3">
           <div className="card" style={{padding:"1rem"}}><small className="muted">Transparency</small><h3>Financial Tracking</h3><div className="muted">Complete offering and expense management</div></div>
