@@ -21,6 +21,8 @@ export default function LoginPage() {
     setSuccess("")
 
     try {
+      console.log('🚀 LOGIN ATTEMPT:', formData)
+      
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
@@ -30,6 +32,7 @@ export default function LoginPage() {
       })
 
       const data = await response.json()
+      console.log('📡 LOGIN RESPONSE:', data)
 
       if (data.success) {
         setSuccess("Login successful! Redirecting to dashboard...")
