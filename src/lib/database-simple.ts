@@ -60,7 +60,7 @@ let users: User[] = [
     id: 'admin_1',
     name: 'Admin User',
     email: 'admin@churchflow.com',
-    password: 'admin123', // In production, this should be hashed
+    password: btoa('admin123'), // Base64 encoded for demo
     role: 'Admin',
     organization: 'ChurchFlow',
     phone: '+1234567890',
