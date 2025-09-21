@@ -38,6 +38,7 @@ export default function SignupPage() {
     }
 
     try {
+      console.log('Form data being sent:', formData)
       const response = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: {
@@ -63,7 +64,11 @@ export default function SignupPage() {
           router.push('/dashboard')
         }
       } else {
-        setError(data.message || 'Signup failed')
+        if (data.errors && data.errors.length > 0) {
+          setError(data.errors.map((err: any) => err.message).join(', '))
+        } else {
+          setError(data.message || 'Signup failed')
+        }
       }
     } catch (err) {
       setError('Network error. Please try again.')

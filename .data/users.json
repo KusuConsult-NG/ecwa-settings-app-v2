@@ -1,0 +1,35 @@
+[
+  {
+    "id": "ecc193ce-01fa-4deb-a7ae-eb6dc8b5a2ab",
+    "name": "Admin User",
+    "email": "admin@churchflow.com",
+    "password": "$2b$12$YrAOapzYiXqOAFHbL6TEPelFv11JOorOPRdehYwdc14bgew0ID6VG",
+    "role": "Admin",
+    "organization": "ChurchFlow",
+    "isEmailVerified": true,
+    "createdAt": "2025-09-21T00:48:41.983Z"
+  },
+  {
+    "id": "4f313b15-ae00-4bf2-83bb-03acaa8eed29",
+    "name": "Pastor John",
+    "email": "pastor@churchflow.com",
+    "password": "$2b$12$nv6h/M90DAIVxYNBzv0Dj.1PpRLlmO6WgUOpXZtNukFjiX9dsKt/W",
+    "role": "Pastor",
+    "organization": "Grace Assembly",
+    "isEmailVerified": true,
+    "createdAt": "2025-09-21T00:48:43.531Z"
+  },
+  {
+    "id": "d75241c0-3adb-4bd1-9cb9-d29b4babd3a7",
+    "name": "Test User",
+    "email": "test@example.com",
+    "password": "$2b$12$RA1XFsrcGc.GpbLo2JHjIeKTkrcXGefpRb.i4tERIWx5GlmqNycgy",
+    "role": "Member",
+    "organization": "ChurchFlow",
+    "phone": "1234567890",
+    "address": "123 Test St",
+    "createdAt": "2025-09-21T00:48:48.796Z",
+    "emailVerificationCode": "513650",
+    "emailVerificationExpires": "2025-09-21T01:18:48.919Z"
+  }
+]
