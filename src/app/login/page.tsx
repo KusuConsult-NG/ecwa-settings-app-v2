@@ -1,8 +1,8 @@
 "use client"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Eye, EyeOff, Lock, Mail } from "lucide-react"
-import { LoadingButton } from "@/components/LoadingSpinner"
+import { Eye, EyeOff, Mail, Lock, ArrowLeft } from "lucide-react"
+import Image from "next/image"
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
@@ -12,12 +12,14 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
+  const [success, setSuccess] = useState("")
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     setError("")
+    setSuccess("")
 
     try {
       const response = await fetch('/api/auth/login', {
@@ -31,19 +33,24 @@ export default function LoginPage() {
       const data = await response.json()
 
       if (data.success) {
+        setSuccess("Login successful! Redirecting to dashboard...")
+        
         // Store user data in localStorage for client-side access
         localStorage.setItem('user', JSON.stringify(data.user))
+        localStorage.setItem('auth-token', data.user.id)
         
         // Dispatch custom event for topbar update
         window.dispatchEvent(new CustomEvent('userLoggedIn', { detail: data.user }))
         
-        // Redirect to dashboard
-        router.push('/dashboard')
+        // Redirect to dashboard after a short delay
+        setTimeout(() => {
+          router.push('/dashboard')
+        }, 1500)
       } else {
-        setError(data.message || 'Login failed')
+        setError(data.message || 'Login failed. Please check your credentials.')
       }
     } catch (err) {
-      setError('Network error. Please try again.')
+      setError('Network error. Please check your connection and try again.')
     } finally {
       setIsLoading(false)
     }
@@ -56,89 +63,124 @@ export default function LoginPage() {
     }))
   }
 
+  const handleDemoLogin = () => {
+    setFormData({
+      email: "admin@churchflow.com",
+      password: "admin123"
+    })
+  }
+
   return (
-    <div className="container">
-      <div className="hero" style={{minHeight: "calc(100vh - 56px)"}}>
-        <div className="auth card" style={{maxWidth: "400px", margin: "2rem auto"}}>
-          <div style={{textAlign: "center", marginBottom: "2rem"}}>
-            <h2>Welcome Back</h2>
-            <p className="muted">Sign in to your ChurchFlow account</p>
+    <div className="auth-container">
+      <div className="auth-card">
+        <div className="auth-header">
+          <div className="logo">
+            <Image src="/logo.svg" alt="ChurchFlow" width={48} height={48} />
+            <h1>ChurchFlow</h1>
           </div>
+          <h2>Welcome Back</h2>
+          <p className="muted">
+            Sign in to your account to continue managing your church operations.
+          </p>
+        </div>
 
-          {error && (
-            <div className="alert alert-error" style={{marginBottom: "1rem"}}>
-              {error}
-            </div>
-          )}
+        {error && (
+          <div className="alert alert-error">
+            <strong>Error:</strong> {error}
+          </div>
+        )}
 
-          <form onSubmit={handleSubmit}>
-            <div className="form-group" style={{marginBottom: "1.5rem"}}>
-              <label htmlFor="email">Email Address</label>
+        {success && (
+          <div className="alert alert-success">
+            <strong>Success:</strong> {success}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="auth-form">
+          <div className="form-group">
+            <label htmlFor="email">Email Address</label>
+            <div className="input-group">
+              <Mail className="input-icon" size={20} />
               <input
                 type="email"
                 id="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="Enter your email"
+                placeholder="Enter your email address"
                 required
+                className="input-with-icon"
               />
             </div>
+          </div>
 
-            <div className="form-group" style={{marginBottom: "1.5rem"}}>
-              <label htmlFor="password">Password</label>
-              <div style={{position: "relative"}}>
-                <input
-                  type={showPassword ? "text" : "password"}
-                  id="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="Enter your password"
-                  required
-                  style={{paddingRight: "40px"}}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  style={{
-                    position: "absolute",
-                    right: "12px",
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                    background: "none",
-                    border: "none",
-                    cursor: "pointer",
-                    color: "var(--muted)",
-                    zIndex: 1,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center"
-                  }}
-                >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                </button>
-              </div>
+          <div className="form-group">
+            <label htmlFor="password">Password</label>
+            <div className="input-group">
+              <Lock className="input-icon" size={20} />
+              <input
+                type={showPassword ? "text" : "password"}
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="Enter your password"
+                required
+                className="input-with-icon"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="password-toggle"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
             </div>
+          </div>
 
-            <LoadingButton
-              type="submit"
-              loading={isLoading}
-              className="primary block"
-              style={{marginBottom: "1rem"}}
+          <button
+            type="submit"
+            className="btn primary full-width"
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <div className="loading-spinner">
+                <div className="spinner"></div>
+                Signing In...
+              </div>
+            ) : (
+              "Sign In"
+            )}
+          </button>
+        </form>
+
+        <div className="auth-footer">
+          <div className="demo-section">
+            <button
+              type="button"
+              onClick={handleDemoLogin}
+              className="demo-button"
             >
-              {isLoading ? "Signing In..." : "Sign In"}
-            </LoadingButton>
-          </form>
+              🚀 Use Demo Credentials
+            </button>
+            <div className="demo-info">
+              <p><strong>Demo Login:</strong></p>
+              <p>Email: admin@churchflow.com</p>
+              <p>Password: admin123</p>
+            </div>
+          </div>
 
-          <div style={{textAlign: "center"}}>
-            <p className="muted" style={{margin: "0 0 1rem 0"}}>
+          <div className="auth-links">
+            <p className="muted">
               Don't have an account?{" "}
-              <a href="/signup" style={{color: "var(--primary)", textDecoration: "none"}}>
-                Sign up here
+              <a href="/signup" className="link-button">
+                Create one here
               </a>
             </p>
-            <a href="/" className="btn ghost">
+            
+            <a href="/" className="back-link">
+              <ArrowLeft size={16} />
               Back to Home
             </a>
           </div>
