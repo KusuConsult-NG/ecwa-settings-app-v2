@@ -1,0 +1,332 @@
+"use client"
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+
+interface Expenditure {
+  id: string
+  title: string
+  description: string
+  amount: number
+  category: string
+  status: 'pending' | 'approved' | 'rejected'
+  submittedBy: string
+  createdAt: string
+  approvedBy?: string
+  approvedAt?: string
+}
+
+export default function ExpendituresPage() {
+  const [expenditures, setExpenditures] = useState<Expenditure[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [filter, setFilter] = useState('all')
+  const [searchTerm, setSearchTerm] = useState('')
+  const router = useRouter()
+
+  const categories = [
+    'Office Supplies',
+    'Equipment & Maintenance',
+    'Travel & Transportation',
+    'Utilities',
+    'Marketing & Advertising',
+    'Professional Services',
+    'Training & Development',
+    'IT & Software',
+    'Facilities & Rent',
+    'Insurance',
+    'Legal & Compliance',
+    'Research & Development',
+    'Events & Conferences',
+    'Charitable Donations',
+    'Other'
+  ]
+
+  const statusColors = {
+    pending: 'warning',
+    approved: 'success',
+    rejected: 'error'
+  }
+
+  const statusIcons = {
+    pending: '⏳',
+    approved: '✅',
+    rejected: '❌'
+  }
+
+  useEffect(() => {
+    loadExpenditures()
+  }, [])
+
+  const loadExpenditures = async () => {
+    try {
+      setIsLoading(true)
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      // Mock data
+      const mockExpenditures: Expenditure[] = [
+        {
+          id: '1',
+          title: 'Office Supplies Purchase',
+          description: 'Monthly office supplies including paper, pens, and notebooks',
+          amount: 250.00,
+          category: 'Office Supplies',
+          status: 'approved',
+          submittedBy: 'John Doe',
+          createdAt: '2024-01-15',
+          approvedBy: 'Jane Smith',
+          approvedAt: '2024-01-16'
+        },
+        {
+          id: '2',
+          title: 'Equipment Maintenance',
+          description: 'Annual maintenance for office equipment',
+          amount: 1200.00,
+          category: 'Equipment & Maintenance',
+          status: 'pending',
+          submittedBy: 'Mike Johnson',
+          createdAt: '2024-01-20'
+        },
+        {
+          id: '3',
+          title: 'Conference Registration',
+          description: 'Registration fees for annual industry conference',
+          amount: 800.00,
+          category: 'Events & Conferences',
+          status: 'rejected',
+          submittedBy: 'Sarah Wilson',
+          createdAt: '2024-01-18',
+          approvedBy: 'Jane Smith',
+          approvedAt: '2024-01-19'
+        }
+      ]
+      
+      setExpenditures(mockExpenditures)
+    } catch (error) {
+      console.error('Error loading expenditures:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const filteredExpenditures = expenditures.filter(exp => {
+    const matchesFilter = filter === 'all' || exp.status === filter
+    const matchesSearch = exp.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         exp.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         exp.submittedBy.toLowerCase().includes(searchTerm.toLowerCase())
+    return matchesFilter && matchesSearch
+  })
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    }).format(amount)
+  }
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    })
+  }
+
+  const handleStatusUpdate = async (id: string, status: 'approved' | 'rejected') => {
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 500))
+      
+      setExpenditures(prev => prev.map(exp => 
+        exp.id === id 
+          ? { 
+              ...exp, 
+              status, 
+              approvedBy: 'Current User',
+              approvedAt: new Date().toISOString()
+            }
+          : exp
+      ))
+    } catch (error) {
+      console.error('Error updating status:', error)
+    }
+  }
+
+  const handleExport = () => {
+    const csvContent = [
+      ['Title', 'Description', 'Amount', 'Category', 'Status', 'Submitted By', 'Date'],
+      ...filteredExpenditures.map(exp => [
+        exp.title,
+        exp.description,
+        exp.amount.toString(),
+        exp.category,
+        exp.status,
+        exp.submittedBy,
+        formatDate(exp.createdAt)
+      ])
+    ].map(row => row.join(',')).join('\n')
+    
+    const blob = new Blob([csvContent], { type: 'text/csv' })
+    const url = window.URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `expenditures-${new Date().toISOString().split('T')[0]}.csv`
+    a.click()
+    window.URL.revokeObjectURL(url)
+  }
+
+  const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const content = e.target?.result as string
+      // Parse CSV and add to expenditures
+      console.log('Importing CSV:', content)
+      // Implementation would parse CSV and add to state
+    }
+    reader.readAsText(file)
+  }
+
+  if (isLoading) {
+    return (
+      <div className="container">
+        <div className="card">
+          <div className="loading">Loading expenditures...</div>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="container">
+      <div className="card">
+        <div className="card-header">
+          <h1>Expenditures Management</h1>
+          <p className="muted">Manage and track organizational expenditures</p>
+        </div>
+
+        <div className="toolbar">
+          <div className="search-box">
+            <input
+              type="text"
+              placeholder="Search expenditures..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          
+          <div className="filters">
+            <select
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+              style={{ appearance: 'none', backgroundImage: 'url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3e%3cpolyline points=\'6,9 12,15 18,9\'%3e%3c/polyline%3e%3c/svg%3e")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.7rem center', backgroundSize: '1rem' }}
+            >
+              <option value="all">All Status</option>
+              <option value="pending">Pending</option>
+              <option value="approved">Approved</option>
+              <option value="rejected">Rejected</option>
+            </select>
+          </div>
+
+          <div className="actions">
+            <button className="btn secondary" onClick={handleExport}>
+              📊 Export CSV
+            </button>
+            <label className="btn secondary">
+              📥 Import CSV
+              <input
+                type="file"
+                accept=".csv"
+                onChange={handleImport}
+                style={{ display: 'none' }}
+              />
+            </label>
+            <button 
+              className="btn primary"
+              onClick={() => router.push('/expenditures/new')}
+            >
+              ➕ Add Expenditure
+            </button>
+          </div>
+        </div>
+
+        <div className="table-container">
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Amount</th>
+                <th>Category</th>
+                <th>Status</th>
+                <th>Submitted By</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredExpenditures.map(exp => (
+                <tr key={exp.id}>
+                  <td>
+                    <div className="title-cell">
+                      <strong>{exp.title}</strong>
+                      <small className="muted">{exp.description}</small>
+                    </div>
+                  </td>
+                  <td>
+                    <span className="amount">{formatCurrency(exp.amount)}</span>
+                  </td>
+                  <td>
+                    <span className="category">{exp.category}</span>
+                  </td>
+                  <td>
+                    <span className={`status status-${statusColors[exp.status]}`}>
+                      {statusIcons[exp.status]} {exp.status}
+                    </span>
+                  </td>
+                  <td>{exp.submittedBy}</td>
+                  <td>{formatDate(exp.createdAt)}</td>
+                  <td>
+                    <div className="action-buttons">
+                      {exp.status === 'pending' && (
+                        <>
+                          <button
+                            className="btn btn-sm success"
+                            onClick={() => handleStatusUpdate(exp.id, 'approved')}
+                          >
+                            Approve
+                          </button>
+                          <button
+                            className="btn btn-sm error"
+                            onClick={() => handleStatusUpdate(exp.id, 'rejected')}
+                          >
+                            Reject
+                          </button>
+                        </>
+                      )}
+                      <button className="btn btn-sm secondary">
+                        View
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {filteredExpenditures.length === 0 && (
+          <div className="empty-state">
+            <p>No expenditures found matching your criteria.</p>
+            <button 
+              className="btn primary"
+              onClick={() => router.push('/expenditures/new')}
+            >
+              Add First Expenditure
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
