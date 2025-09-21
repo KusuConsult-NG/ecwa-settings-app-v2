@@ -1,56 +1,58 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { authenticateUser, initializeDefaultUsers } from '@/lib/auth'
-import { loginSchema, validateData, sanitizeInput } from '@/lib/validation'
-import { withRateLimit, authRateLimit } from '@/lib/rate-limit'
+
+export const dynamic = 'force-dynamic'
+
+// Simple in-memory user store (should match signup)
+let users: any[] = [
+  {
+    id: 'admin_1',
+    name: 'Admin User',
+    email: 'admin@churchflow.com',
+    password: 'admin123',
+    role: 'Admin',
+    organization: 'ChurchFlow',
+    phone: '+1234567890',
+    address: '123 Admin Street',
+    createdAt: new Date().toISOString(),
+    isEmailVerified: true
+  }
+]
 
 export async function POST(request: NextRequest) {
-  return withRateLimit(authRateLimit, 'login', request, async () => {
   try {
-    // Initialize default users if needed
-    await initializeDefaultUsers()
-
-    // Parse and sanitize request body
+    console.log('Login API called')
+    
+    // Parse request body
     const body = await request.json()
-    const sanitizedBody = sanitizeInput(body)
+    console.log('Request body:', body)
     
-    // Validate request body
-    const validation = validateData(loginSchema, sanitizedBody)
+    // Basic validation
+    const { email, password } = body
     
-    if (!validation.success) {
+    if (!email || !password) {
       return NextResponse.json(
         { 
           success: false, 
-          message: 'Validation failed',
-          errors: validation.errors
+          message: 'Email and password are required'
         },
         { status: 400 }
       )
     }
-
-    const { email, password } = validation.data!
-
-    const user = await authenticateUser(email, password)
-
+    
+    // Find user
+    const user = users.find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === password)
+    
     if (!user) {
       return NextResponse.json(
         { success: false, message: 'Invalid email or password' },
         { status: 401 }
       )
     }
-
-    // Check if email is verified
-    if (!user.isEmailVerified) {
-      return NextResponse.json(
-        { 
-          success: false, 
-          message: 'Please verify your email address before logging in. Check your email for a verification code.',
-          requiresVerification: true 
-        },
-        { status: 403 }
-      )
-    }
-
-    // Create response with user data
+    
+    // Update last login
+    user.lastLogin = new Date().toISOString()
+    
+    // Return success response
     const response = NextResponse.json({
       success: true,
       message: 'Login successful',
@@ -63,22 +65,26 @@ export async function POST(request: NextRequest) {
         lastLogin: user.lastLogin
       }
     })
-
-    // Set HTTP-only cookie for server-side authentication
+    
+    // Set HTTP-only cookie
     response.cookies.set('auth-token', user.id, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       maxAge: 60 * 60 * 24 * 7 // 7 days
     })
-
+    
     return response
+    
   } catch (error) {
     console.error('Login error:', error)
     return NextResponse.json(
-      { success: false, message: 'Internal server error' },
+      { 
+        success: false, 
+        message: 'Internal server error',
+        error: process.env.NODE_ENV === 'development' ? String(error) : undefined
+      },
       { status: 500 }
     )
   }
-  })
 }
