@@ -1,5 +1,5 @@
 "use client"
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
 export default function VerifyLoginPage() {
@@ -7,7 +7,12 @@ export default function VerifyLoginPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const [mounted, setMounted] = useState(false)
   const router = useRouter()
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -67,6 +72,17 @@ export default function VerifyLoginPage() {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  // Show loading state until component is mounted
+  if (!mounted) {
+    return (
+      <div className="auth-container">
+        <div className="auth-card">
+          <div className="loading">Loading verification form...</div>
+        </div>
+      </div>
+    )
   }
 
   return (

@@ -1,12 +1,12 @@
 "use client"
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
 export default function UpdateProfilePage() {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
-    email: localStorage.getItem('inviteEmail') || '',
+    email: '',
     phone: '',
     address: '',
     city: '',
@@ -25,7 +25,31 @@ export default function UpdateProfilePage() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const [mounted, setMounted] = useState(false)
   const router = useRouter()
+
+  useEffect(() => {
+    setMounted(true)
+    // Load data from localStorage only on client side
+    const inviteEmail = localStorage.getItem('inviteEmail')
+    const inviteName = localStorage.getItem('inviteName')
+    
+    if (inviteEmail) {
+      setFormData(prev => ({
+        ...prev,
+        email: inviteEmail
+      }))
+    }
+    
+    if (inviteName) {
+      const nameParts = inviteName.split(' ')
+      setFormData(prev => ({
+        ...prev,
+        firstName: nameParts[0] || '',
+        lastName: nameParts.slice(1).join(' ') || ''
+      }))
+    }
+  }, [])
 
   const countries = [
     'United States', 'Canada', 'United Kingdom', 'Australia', 'Germany', 'France',
@@ -83,6 +107,17 @@ export default function UpdateProfilePage() {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  // Show loading state until component is mounted
+  if (!mounted) {
+    return (
+      <div className="auth-container">
+        <div className="auth-card">
+          <div className="loading">Loading profile form...</div>
+        </div>
+      </div>
+    )
   }
 
   return (
