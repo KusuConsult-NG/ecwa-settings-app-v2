@@ -5,10 +5,5 @@
   "devCommand": "bun dev",
   "installCommand": "bun install",
   "framework": "nextjs",
-  "regions": ["iad1"],
-  "functions": {
-    "src/app/api/**/*.ts": {
-      "runtime": "nodejs18.x"
-    }
-  }
+  "regions": ["iad1"]
 }
