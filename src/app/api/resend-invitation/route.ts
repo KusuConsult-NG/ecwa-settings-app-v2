@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { sendInviteEmail } from '@/lib/sendgrid-service'
-import { storeInvitationCode } from '@/lib/invitation-codes'
+import { createMagicInvite, getAllMagicInvites } from '@/lib/magic-link-store'
 
 export const dynamic = 'force-dynamic'
 
@@ -23,26 +23,45 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    // Generate new code
-    const authCode = Math.floor(100000 + Math.random() * 900000).toString()
-    const verificationLink = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/verify-invitation?code=${authCode}&email=${encodeURIComponent(email)}`
+    // Find existing invitation for this email
+    const existingInvites = getAllMagicInvites()
+    const existingInvite = existingInvites.find(inv => 
+      inv.email.toLowerCase() === email.toLowerCase() && 
+      !inv.consumed && 
+      Date.now() < inv.expiresAt
+    )
 
-    // For demo purposes, we'll use default values
-    // In a real app, you'd look up the user's invitation details from the database
-    const memberName = 'Member' // This should come from the database
-    const organizationName = 'ChurchFlow' // This should come from the database
-    const memberRole = 'member' // This should come from the database
+    if (!existingInvite) {
+      return NextResponse.json({
+        success: false,
+        message: 'No active invitation found for this email'
+      }, { status: 404 })
+    }
 
-    // Store invitation code
-    storeInvitationCode(authCode, email, memberName, memberRole, organizationName)
+    // Create new magic invite with updated details
+    const newInvite = createMagicInvite(
+      email,
+      existingInvite.name,
+      existingInvite.role,
+      existingInvite.organizationId,
+      existingInvite.organizationName,
+      existingInvite.inviterName
+    )
+
+    // Create magic link
+    const magicLink = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/verify-invite?token=${newInvite.magicToken}`
+    
+    // Create verification link (fallback)
+    const verificationLink = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/verify-invite?code=${newInvite.authCode}&email=${encodeURIComponent(email)}`
 
     // Send email
     const emailSent = await sendInviteEmail({
       to: email,
-      name: memberName,
-      organizationName: organizationName,
-      inviterName: 'Organization Admin',
-      authCode,
+      name: existingInvite.name,
+      organizationName: existingInvite.organizationName,
+      inviterName: existingInvite.inviterName,
+      authCode: newInvite.authCode,
+      magicLink,
       verificationLink
     })
 

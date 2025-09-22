@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getOrganizations, createOrganization } from '@/lib/database-simple'
-import { sendInviteEmail } from '@/lib/gmail-service'
-import { createInvite } from '@/lib/inviteStore'
+import { sendInviteEmail } from '@/lib/sendgrid-service'
+import { createMagicInvite } from '@/lib/magic-link-store'
 import { sign } from '@/lib/jwt'
 
 export const dynamic = 'force-dynamic'
@@ -106,29 +106,34 @@ export async function POST(request: NextRequest) {
     if (leaders && Array.isArray(leaders)) {
       for (const leader of leaders) {
         try {
-          // Create invite in the store for leaders
-          const invite = createInvite(
+          // Create magic invite for leaders
+          const invite = createMagicInvite(
             leader.email,
             `${leader.firstName} ${leader.surname}`,
             'leader',
             newOrg.id,
-            name
+            name,
+            'Organization Admin'
           )
           
-          // Create verification link
-          const verificationLink = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/accept?email=${encodeURIComponent(leader.email)}&inviteId=${invite.id}`
+          // Create magic link
+          const magicLink = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/verify-invite?token=${invite.magicToken}`
+          
+          // Create verification link (fallback)
+          const verificationLink = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/verify-invite?code=${invite.authCode}&email=${encodeURIComponent(leader.email)}`
           
           await sendInviteEmail({
             to: leader.email,
             name: `${leader.firstName} ${leader.surname}`,
             organizationName: name,
             inviterName: 'Organization Admin',
-            authCode: invite.code,
+            authCode: invite.authCode,
+            magicLink,
             verificationLink
           })
           
           leaderInvitationsSent++
-          console.log(`Leader invitation sent to ${leader.email} with code: ${invite.code}`)
+          console.log(`Leader invitation sent to ${leader.email} with code: ${invite.authCode} and magic link: ${magicLink}`)
         } catch (error) {
           console.error(`Failed to send leader invitation to ${leader.email}:`, error)
         }
@@ -140,29 +145,34 @@ export async function POST(request: NextRequest) {
     if (members && Array.isArray(members)) {
       for (const member of members) {
         try {
-          // Create invite in the store
-          const invite = createInvite(
+          // Create magic invite
+          const invite = createMagicInvite(
             member.email,
             member.name,
             member.role,
-            newOrg.id, // Use org ID
-            name
+            newOrg.id,
+            name,
+            'Organization Admin'
           )
           
-          // Create verification link
-          const verificationLink = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/accept?email=${encodeURIComponent(member.email)}&inviteId=${invite.id}`
+          // Create magic link
+          const magicLink = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/verify-invite?token=${invite.magicToken}`
+          
+          // Create verification link (fallback)
+          const verificationLink = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/verify-invite?code=${invite.authCode}&email=${encodeURIComponent(member.email)}`
           
           await sendInviteEmail({
             to: member.email,
             name: member.name,
             organizationName: name,
             inviterName: 'Organization Admin',
-            authCode: invite.code,
+            authCode: invite.authCode,
+            magicLink,
             verificationLink
           })
           
           memberInvitationsSent++
-          console.log(`Member invitation sent to ${member.email} with code: ${invite.code}`)
+          console.log(`Member invitation sent to ${member.email} with code: ${invite.authCode} and magic link: ${magicLink}`)
         } catch (error) {
           console.error(`Failed to send member invitation to ${member.email}:`, error)
         }

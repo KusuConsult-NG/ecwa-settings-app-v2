@@ -11,6 +11,7 @@ export interface InviteEmailData {
   authCode: string
   organizationName: string
   inviterName: string
+  magicLink: string
   verificationLink?: string
 }
 
@@ -52,7 +53,7 @@ export async function sendInviteEmail(data: InviteEmailData): Promise<boolean> {
     const msg = {
       to: data.to,
       from: {
-        email: process.env.SENDGRID_FROM_EMAIL || 'noreply@example.com',
+        email: 'noreply@churchflow.com',
         name: 'ChurchFlow Team'
       },
       subject: `You're invited to join ${data.organizationName} on ChurchFlow`,
@@ -83,18 +84,22 @@ export async function sendInviteEmail(data: InviteEmailData): Promise<boolean> {
               <h2>Hello ${data.name}!</h2>
               <p>You've been invited by <strong>${data.inviterName}</strong> to join <strong>${data.organizationName}</strong> on ChurchFlow.</p>
               
-              <p>To complete your registration and access your account, please use the authentication code below:</p>
+              <p>To complete your registration and access your account, you have two options:</p>
               
-              <div class="auth-code">
-                ${data.authCode}
+              <div style="margin: 20px 0; padding: 20px; background: #f0f9ff; border-radius: 8px; border: 1px solid #0ea5e9;">
+                <h3 style="margin: 0 0 10px 0; color: #0369a1;">Option 1: Use Magic Link (Recommended)</h3>
+                <p style="margin: 0 0 15px 0;">Click the button below to instantly accept your invitation:</p>
+                <a href="${data.magicLink}" class="button" style="background: #0ea5e9; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Accept Invitation</a>
               </div>
               
-              <p>This code will expire in 24 hours for security reasons.</p>
-              
-              ${data.verificationLink ? `
-                <p>Click the button below to accept your invitation:</p>
-                <a href="${data.verificationLink}" class="button">Accept Invitation</a>
-              ` : ''}
+              <div style="margin: 20px 0; padding: 20px; background: #fef3c7; border-radius: 8px; border: 1px solid #f59e0b;">
+                <h3 style="margin: 0 0 10px 0; color: #92400e;">Option 2: Use Verification Code</h3>
+                <p style="margin: 0 0 10px 0;">Enter this 6-digit code on the verification page:</p>
+                <div class="auth-code" style="background: #1f2937; color: white; padding: 15px; text-align: center; font-size: 20px; font-weight: bold; letter-spacing: 3px; border-radius: 8px; margin: 10px 0;">
+                  ${data.authCode}
+                </div>
+                <p style="margin: 10px 0 0 0; font-size: 14px; color: #92400e;">This code will expire in 24 hours for security reasons.</p>
+              </div>
               
               <p>Once you've entered the code, you'll be able to:</p>
               <ul>
@@ -159,7 +164,7 @@ export async function sendWelcomeEmail(data: WelcomeEmailData): Promise<boolean>
     const msg = {
       to: data.to,
       from: {
-        email: process.env.SENDGRID_FROM_EMAIL || 'noreply@example.com',
+        email: 'noreply@churchflow.com',
         name: 'ChurchFlow Team'
       },
       subject: `Welcome to ${data.organizationName} on ChurchFlow!`,
