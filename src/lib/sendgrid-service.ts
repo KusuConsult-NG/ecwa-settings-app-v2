@@ -34,10 +34,25 @@ export async function sendInviteEmail(data: InviteEmailData): Promise<boolean> {
       return true
     }
 
+    // Check if we're in development mode (no verified domain)
+    const isDevelopment = process.env.NODE_ENV === 'development' || !process.env.SENDGRID_FROM_EMAIL?.includes('@')
+    
+    if (isDevelopment) {
+      console.log('📧 INVITE EMAIL (Development Mode - SendGrid configured but domain not verified):')
+      console.log('To:', data.to)
+      console.log('Subject: You\'re invited to join ChurchFlow')
+      console.log('Auth Code:', data.authCode)
+      console.log('Organization:', data.organizationName)
+      console.log('Inviter:', data.inviterName)
+      console.log('Verification Link:', data.verificationLink)
+      console.log('⚠️  To send real emails, verify your domain in SendGrid dashboard')
+      return true
+    }
+
     const msg = {
       to: data.to,
       from: {
-        email: process.env.SENDGRID_FROM_EMAIL || 'noreply@churchflow.com',
+        email: process.env.SENDGRID_FROM_EMAIL || 'noreply@example.com',
         name: 'ChurchFlow Team'
       },
       subject: `You're invited to join ${data.organizationName} on ChurchFlow`,
@@ -144,7 +159,7 @@ export async function sendWelcomeEmail(data: WelcomeEmailData): Promise<boolean>
     const msg = {
       to: data.to,
       from: {
-        email: process.env.SENDGRID_FROM_EMAIL || 'noreply@churchflow.com',
+        email: process.env.SENDGRID_FROM_EMAIL || 'noreply@example.com',
         name: 'ChurchFlow Team'
       },
       subject: `Welcome to ${data.organizationName} on ChurchFlow!`,
