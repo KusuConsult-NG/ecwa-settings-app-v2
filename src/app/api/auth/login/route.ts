@@ -43,10 +43,27 @@ export async function POST(request: NextRequest) {
       )
     }
     
-    // Find user
-    const user = findUserByEmail(email.toLowerCase().trim())
+    // Step 1: Lowercase email for consistency
+    const normalizedEmail = email.toLowerCase().trim()
+    console.log('Login attempt for normalized email:', normalizedEmail)
     
-    if (!user || !verifyPassword(password, user.password)) {
+    // Step 2: Find user with normalized email
+    const user = findUserByEmail(normalizedEmail)
+    
+    if (!user) {
+      console.log('User not found for email:', normalizedEmail)
+      return NextResponse.json(
+        { success: false, message: 'Invalid email or password' },
+        { status: 401 }
+      )
+    }
+    
+    // Step 3: Verify hash with bcryptjs
+    const isPasswordValid = verifyPassword(password, user.password)
+    console.log('Password verification result:', isPasswordValid)
+    
+    if (!isPasswordValid) {
+      console.log('Invalid password for user:', normalizedEmail)
       return NextResponse.json(
         { success: false, message: 'Invalid email or password' },
         { status: 401 }
@@ -63,8 +80,9 @@ export async function POST(request: NextRequest) {
     
     // Update last login
     user.lastLogin = new Date().toISOString()
+    console.log('Login successful for user:', user.email)
     
-    // Return success response
+    // Step 4: Set session JWT cookie
     const response = NextResponse.json({
       success: true,
       message: 'Login successful',
@@ -78,7 +96,7 @@ export async function POST(request: NextRequest) {
       }
     })
     
-    // Set HTTP-only cookie with enhanced security
+    // Set HTTP-only JWT session cookie
     response.cookies.set('auth-token', user.id, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -86,6 +104,8 @@ export async function POST(request: NextRequest) {
       maxAge: 60 * 60 * 24 * 7, // 7 days
       path: '/'
     })
+    
+    console.log('Session cookie set for user:', user.id)
     
     return response
     

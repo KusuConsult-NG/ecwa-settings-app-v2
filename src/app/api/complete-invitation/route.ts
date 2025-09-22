@@ -23,11 +23,14 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    // Find the invite by email (simplified approach)
-    // In production, you'd store the invite ID in session or pass it as parameter
+    // Normalize email for consistency
+    const normalizedEmail = email.toLowerCase().trim()
+    console.log('Complete invitation for normalized email:', normalizedEmail)
+    
+    // Find the invite by normalized email
     const allInvites = getAllMagicInvites()
     const invite = allInvites.find((inv: MagicInvite) => 
-      inv.email.toLowerCase() === email.toLowerCase() && 
+      inv.email.toLowerCase() === normalizedEmail && 
       !inv.consumed && 
       Date.now() < inv.expiresAt
     )
@@ -39,8 +42,8 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    // Check if user already exists
-    const existingUser = findUserByEmail(email)
+    // Check if user already exists (using normalized email)
+    const existingUser = findUserByEmail(normalizedEmail)
     if (existingUser) {
       return NextResponse.json({
         success: false,
@@ -48,11 +51,11 @@ export async function POST(request: NextRequest) {
       }, { status: 409 })
     }
 
-    // Create new user account
+    // Create new user account with normalized email and hashed password
     const newUser = createUser({
       name,
-      email,
-      password: hashPassword(password),
+      email: normalizedEmail, // Store lowercase email
+      password: hashPassword(password), // Hash password with bcryptjs
       role: 'user',
       organization: invite.organizationName,
       phone: phone || '',

@@ -14,18 +14,16 @@ export async function POST(request: NextRequest) {
     // Basic validation
     const { name, email, password, confirmPassword, phone, address } = body
     
-    if (!name || !email || !password || !confirmPassword || !phone || !address) {
+    if (!name || !email || !password || !confirmPassword) {
       return NextResponse.json(
         { 
           success: false, 
-          message: 'All fields are required',
+          message: 'Name, email, password, and confirm password are required',
           errors: [
             { field: 'name', message: !name ? 'Name is required' : '' },
             { field: 'email', message: !email ? 'Email is required' : '' },
             { field: 'password', message: !password ? 'Password is required' : '' },
-            { field: 'confirmPassword', message: !confirmPassword ? 'Confirm password is required' : '' },
-            { field: 'phone', message: !phone ? 'Phone is required' : '' },
-            { field: 'address', message: !address ? 'Address is required' : '' }
+            { field: 'confirmPassword', message: !confirmPassword ? 'Confirm password is required' : '' }
           ].filter(e => e.message)
         },
         { status: 400 }
@@ -63,8 +61,12 @@ export async function POST(request: NextRequest) {
       )
     }
     
-    // Check if user already exists
-    const existingUser = findUserByEmail(email)
+    // Step 1: Lowercase email for consistency
+    const normalizedEmail = email.toLowerCase()
+    console.log('Normalized email:', normalizedEmail)
+    
+    // Check if user already exists (using normalized email)
+    const existingUser = findUserByEmail(normalizedEmail)
     if (existingUser) {
       return NextResponse.json(
         { success: false, message: 'User with this email already exists' },
@@ -72,15 +74,19 @@ export async function POST(request: NextRequest) {
       )
     }
     
-    // Create new user
+    // Step 2: Hash password with bcryptjs
+    const hashedPassword = hashPassword(password)
+    console.log('Password hashed successfully')
+    
+    // Step 3: Save user with normalized email and hashed password
     const newUser = createUser({
       name,
-      email,
-      password: hashPassword(password),
+      email: normalizedEmail, // Store lowercase email
+      password: hashedPassword,
       role: "user",
       organization: "ChurchFlow",
-      phone,
-      address
+      phone: phone || '',
+      address: address || ''
     })
     
     console.log('User created:', newUser.id)
