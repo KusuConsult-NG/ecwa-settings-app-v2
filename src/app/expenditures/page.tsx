@@ -58,6 +58,18 @@ export default function ExpendituresPage() {
     loadExpenditures()
   }, [])
 
+  // Refresh data when page becomes visible (e.g., returning from new page)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        loadExpenditures()
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
+  }, [])
+
   const loadExpenditures = async () => {
     try {
       setIsLoading(true)
@@ -278,6 +290,13 @@ export default function ExpendituresPage() {
           </div>
 
           <div className="actions">
+            <button 
+              className="btn secondary" 
+              onClick={loadExpenditures}
+              disabled={isLoading}
+            >
+              🔄 Refresh
+            </button>
             <button className="btn secondary" onClick={handleExport}>
               📊 Export CSV
             </button>

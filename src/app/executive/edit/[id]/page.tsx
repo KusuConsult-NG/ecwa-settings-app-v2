@@ -84,25 +84,28 @@ export default function EditExecutivePage() {
   const loadExecutiveData = async () => {
     try {
       setIsLoading(true)
-      // Simulate API call to load executive data
-      await new Promise(resolve => setTimeout(resolve, 1000))
       
-      // Mock data - in real app, this would come from API
-      const executiveData = {
-        title1: 'Rev.',
-        title2: 'Dr.',
-        name: 'John Doe',
-        position: 'President',
-        department: '',
-        email: 'president@ecwa.com',
-        phone: '+234 801 234 5678',
-        address: '123 Church Street, Jos, Plateau State',
-        startDate: '2020-01-01',
-        salary: '500000',
-        status: 'elected'
+      const response = await fetch(`/api/executives?id=${params.id}`)
+      const data = await response.json()
+      
+      if (data.success && data.data) {
+        const executive = data.data
+        setFormData({
+          title1: executive.title1 || '',
+          title2: executive.title2 || '',
+          name: executive.name || '',
+          position: executive.position || '',
+          department: executive.department || '',
+          email: executive.email || '',
+          phone: executive.phone || '',
+          address: executive.address || '',
+          startDate: executive.startDate || '',
+          salary: executive.salary?.toString() || '',
+          status: executive.status || 'active'
+        })
+      } else {
+        setError('Executive not found')
       }
-      
-      setFormData(executiveData)
     } catch (error) {
       console.error('Error loading executive data:', error)
       setError('Failed to load executive data')
@@ -126,18 +129,32 @@ export default function EditExecutivePage() {
     setSuccess('')
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      console.log('Updated executive data:', formData)
-      setSuccess('Executive member updated successfully!')
-      
-      // Redirect after 2 seconds
-      setTimeout(() => {
-        router.push('/executive')
-      }, 2000)
+      const response = await fetch('/api/executives', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: params.id,
+          ...formData
+        })
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        setSuccess('Executive member updated successfully!')
+        
+        // Redirect after 2 seconds
+        setTimeout(() => {
+          router.push('/executive')
+        }, 2000)
+      } else {
+        setError(data.message || 'Failed to update executive member. Please try again.')
+      }
       
     } catch (error) {
+      console.error('Error updating executive:', error)
       setError('Failed to update executive member. Please try again.')
     } finally {
       setIsLoading(false)

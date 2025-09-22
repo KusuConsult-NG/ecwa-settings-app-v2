@@ -89,28 +89,44 @@ export default function NewExecutivePage() {
     setSuccess('')
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      console.log('Executive data:', formData)
-      setSuccess('Executive member added successfully!')
-      
-      // Reset form
-      setFormData({
-        title1: '',
-        title2: '',
-        name: '',
-        position: '',
-        department: '',
-        email: '',
-        phone: '',
-        address: '',
-        startDate: '',
-        salary: '',
-        status: 'active'
+      const response = await fetch('/api/executives', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
       })
+
+      const data = await response.json()
+
+      if (data.success) {
+        setSuccess('Executive member added successfully!')
+        
+        // Reset form
+        setFormData({
+          title1: '',
+          title2: '',
+          name: '',
+          position: '',
+          department: '',
+          email: '',
+          phone: '',
+          address: '',
+          startDate: '',
+          salary: '',
+          status: 'active'
+        })
+
+        // Redirect after 2 seconds
+        setTimeout(() => {
+          router.push('/executive')
+        }, 2000)
+      } else {
+        setError(data.message || 'Failed to add executive member. Please try again.')
+      }
       
     } catch (error) {
+      console.error('Error creating executive:', error)
       setError('Failed to add executive member. Please try again.')
     } finally {
       setIsLoading(false)

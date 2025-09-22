@@ -27,63 +27,56 @@ export default function ExecutivePage() {
   const [filterStatus, setFilterStatus] = useState("all")
 
   useEffect(() => {
-    // Simulate loading data
-    const executivesData: Executive[] = [
-      {
-        id: "1",
-        title1: "Rev",
-        title2: "Dr.",
-        name: "John Doe",
-        position: "President",
-        department: "",
-        email: "president@ecwa.com",
-        phone: "+234 801 234 5678",
-        tenure: "2020 - Present",
-        status: "elected",
-        bio: "Experienced leader with over 15 years in ministry, leading ECWA with wisdom and compassion.",
-        achievements: ["Led ECWA growth across Nigeria", "Established 50+ branch churches", "Mentored 100+ pastors"],
-        photo: "/api/placeholder/150/150",
-        salary: 500000,
-        startDate: "2020-01-01"
-      },
-      {
-        id: "2",
-        title1: "Pastor",
-        title2: "Prof",
-        name: "Jane Smith",
-        position: "General Secretary",
-        department: "Education Department",
-        email: "secretary@ecwa.com",
-        phone: "+234 802 345 6789",
-        tenure: "2018 - Present",
-        status: "elected",
-        bio: "Dedicated administrator with expertise in church management and organizational development.",
-        achievements: ["Streamlined church administration", "Implemented digital systems", "Trained 50+ volunteers"],
-        photo: "/api/placeholder/150/150",
-        salary: 400000,
-        startDate: "2018-01-01"
-      },
-      {
-        id: "3",
-        title1: "Mr.",
-        title2: "Engr.",
-        name: "Michael Johnson",
-        position: "Treasurer",
-        department: "Finance Department",
-        email: "treasurer@ecwa.com",
-        phone: "+234 803 456 7890",
-        tenure: "2019 - Present",
-        status: "elected",
-        bio: "Experienced financial manager with expertise in church finances and budget management.",
-        achievements: ["Improved financial transparency", "Reduced operational costs by 20%", "Implemented digital accounting"],
-        photo: "/api/placeholder/150/150",
-        salary: 350000,
-        startDate: "2019-01-01"
-      }
-    ]
-
-    setExecutives(executivesData)
+    loadExecutives()
   }, [])
+
+  // Refresh data when page becomes visible
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        loadExecutives()
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
+  }, [])
+
+  const loadExecutives = async () => {
+    try {
+      const response = await fetch('/api/executives')
+      const data = await response.json()
+      
+      if (data.success) {
+        // Transform the data to match the expected format
+        const transformedExecutives: Executive[] = data.data.map((exec: any) => ({
+          id: exec.id,
+          title1: exec.title1,
+          title2: exec.title2,
+          name: exec.name,
+          position: exec.position,
+          department: exec.department,
+          email: exec.email,
+          phone: exec.phone,
+          tenure: `${new Date(exec.startDate).getFullYear()} - Present`,
+          status: exec.status,
+          bio: `Experienced leader in ${exec.position} role.`,
+          achievements: [`Led ${exec.position} initiatives`, "Contributed to church growth", "Mentored team members"],
+          photo: "/api/placeholder/150/150",
+          salary: exec.salary,
+          startDate: exec.startDate
+        }))
+        
+        setExecutives(transformedExecutives)
+      } else {
+        console.error('Error loading executives:', data.message)
+        setExecutives([])
+      }
+    } catch (error) {
+      console.error('Error loading executives:', error)
+      setExecutives([])
+    }
+  }
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -116,6 +109,27 @@ export default function ExecutivePage() {
 
   const activeExecutives = executives.filter(exec => exec.status === 'active').length
   const totalExecutives = executives.length
+
+  const handleDeleteExecutive = async (id: string) => {
+    try {
+      const response = await fetch(`/api/executives?id=${id}`, {
+        method: 'DELETE'
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        // Remove from local state
+        setExecutives(prev => prev.filter(exec => exec.id !== id))
+        alert('Executive deleted successfully!')
+      } else {
+        alert('Failed to delete executive: ' + data.message)
+      }
+    } catch (error) {
+      console.error('Error deleting executive:', error)
+      alert('Failed to delete executive. Please try again.')
+    }
+  }
 
   return (
     <div className="container">
@@ -208,6 +222,12 @@ export default function ExecutivePage() {
             <option value="appointed">Appointed</option>
             <option value="retired">Retired</option>
           </select>
+          <button 
+            className="btn secondary" 
+            onClick={loadExecutives}
+          >
+            🔄 Refresh
+          </button>
           <a href="/executive/new" className="btn primary">
             <Plus size={16} />
             Add Executive
@@ -286,7 +306,13 @@ export default function ExecutivePage() {
                 {exec.status.charAt(0).toUpperCase() + exec.status.slice(1)}
               </span>
               <div className="btn-group">
-                <button className="btn-sm btn-secondary" title="View Profile">
+                <button 
+                  className="btn-sm btn-secondary" 
+                  title="View Profile"
+                  onClick={() => {
+                    alert(`Executive Details:\n\nName: ${[exec.title1, exec.title2].filter(Boolean).join(' ')} ${exec.name}\nPosition: ${exec.position}\nEmail: ${exec.email}\nPhone: ${exec.phone}\nDepartment: ${exec.department || 'N/A'}\nSalary: ₦${exec.salary.toLocaleString()}\nStatus: ${exec.status}`)
+                  }}
+                >
                   <Eye size={14} />
                 </button>
                 <button 
@@ -295,6 +321,17 @@ export default function ExecutivePage() {
                   onClick={() => window.location.href = `/executive/edit/${exec.id}`}
                 >
                   <Edit size={14} />
+                </button>
+                <button 
+                  className="btn-sm btn-danger" 
+                  title="Delete Executive"
+                  onClick={() => {
+                    if (confirm(`Are you sure you want to delete ${exec.name}?`)) {
+                      handleDeleteExecutive(exec.id)
+                    }
+                  }}
+                >
+                  <Trash2 size={14} />
                 </button>
               </div>
             </div>

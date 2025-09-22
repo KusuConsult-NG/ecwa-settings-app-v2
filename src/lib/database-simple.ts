@@ -57,6 +57,22 @@ interface BankAccount {
   createdAt: string
 }
 
+interface Executive {
+  id: string
+  title1: string
+  title2: string
+  name: string
+  position: string
+  department: string
+  email: string
+  phone: string
+  address: string
+  startDate: string
+  salary: number
+  status: 'active' | 'inactive' | 'elected' | 'appointed'
+  createdAt: string
+}
+
 // In-memory storage
 let users: User[] = [
   {
@@ -95,6 +111,7 @@ let organizations: Organization[] = [
 
 let expenditures: Expenditure[] = []
 let income: Income[] = []
+let executives: Executive[] = []
 let bankAccounts: BankAccount[] = [
   {
     id: 'bank_1',
@@ -216,4 +233,37 @@ export function hashPassword(password: string): string {
 
 export function verifyPassword(password: string, hashedPassword: string): boolean {
   return btoa(password) === hashedPassword
+}
+
+// Executive operations
+export function createExecutive(execData: Omit<Executive, 'id' | 'createdAt'>): Executive {
+  const executive: Executive = {
+    id: `exec_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    ...execData,
+    createdAt: new Date().toISOString()
+  }
+  executives.push(executive)
+  return executive
+}
+
+export function getAllExecutives(): Executive[] {
+  return executives
+}
+
+export function updateExecutive(id: string, execData: Partial<Omit<Executive, 'id' | 'createdAt'>>): Executive | null {
+  const executive = executives.find(exec => exec.id === id)
+  if (executive) {
+    Object.assign(executive, execData)
+    return executive
+  }
+  return null
+}
+
+export function deleteExecutive(id: string): boolean {
+  const index = executives.findIndex(exec => exec.id === id)
+  if (index !== -1) {
+    executives.splice(index, 1)
+    return true
+  }
+  return false
 }
