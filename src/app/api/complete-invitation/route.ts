@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getMagicInviteByCode, getMagicInviteByToken, consumeMagicInvite } from '@/lib/magic-link-store'
+import { getMagicInviteByCode, getMagicInviteByToken, consumeMagicInvite, getAllMagicInvites, MagicInvite } from '@/lib/magic-link-store'
 import { createUser, findUserByEmail, hashPassword } from '@/lib/database-simple'
 import { sign } from '@/lib/jwt'
 
@@ -25,8 +25,8 @@ export async function POST(request: NextRequest) {
 
     // Find the invite by email (simplified approach)
     // In production, you'd store the invite ID in session or pass it as parameter
-    const allInvites = require('@/lib/magic-link-store').getAllMagicInvites()
-    const invite = allInvites.find(inv => 
+    const allInvites = getAllMagicInvites()
+    const invite = allInvites.find((inv: MagicInvite) => 
       inv.email.toLowerCase() === email.toLowerCase() && 
       !inv.consumed && 
       Date.now() < inv.expiresAt
