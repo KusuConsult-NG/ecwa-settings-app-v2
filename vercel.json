@@ -1,4 +1,14 @@
 {
-  "name": "churchflow-app",
-  "version": 2
+  "name": "ecwa-settings-app-v2",
+  "version": 2,
+  "buildCommand": "bun run build",
+  "devCommand": "bun dev",
+  "installCommand": "bun install",
+  "framework": "nextjs",
+  "regions": ["iad1"],
+  "functions": {
+    "src/app/api/**/*.ts": {
+      "runtime": "nodejs18.x"
+    }
+  }
 }
