@@ -95,6 +95,9 @@ export default function OrgCreatePage() {
   const [message, setMessage] = useState("")
   const [mounted, setMounted] = useState(false)
   const [parentOrgs, setParentOrgs] = useState<Org[]>([])
+  const [members, setMembers] = useState<{name: string, email: string, role: string}[]>([])
+  const [showMemberForm, setShowMemberForm] = useState(false)
+  const [memberForm, setMemberForm] = useState({name: '', email: '', role: ''})
 
   useEffect(() => {
     setMounted(true)
@@ -230,6 +233,23 @@ export default function OrgCreatePage() {
     setLeaders(prev => prev.filter(leader => leader.id !== id))
   }
 
+  const addMember = () => {
+    if (memberForm.name && memberForm.email && memberForm.role) {
+      setMembers([...members, { ...memberForm }])
+      setMemberForm({ name: '', email: '', role: '' })
+      setShowMemberForm(false)
+    }
+  }
+
+  const removeMember = (index: number) => {
+    setMembers(members.filter((_, i) => i !== index))
+  }
+
+  const resetMemberForm = () => {
+    setMemberForm({ name: '', email: '', role: '' })
+    setShowMemberForm(false)
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!orgName || !email || !orgType) {
@@ -264,7 +284,8 @@ export default function OrgCreatePage() {
           phone: phone || undefined,
           address: address || undefined,
           parentId: selectedParent || undefined,
-          leaders: leaders
+          leaders: leaders,
+          members: members
         })
       })
 
@@ -668,6 +689,123 @@ export default function OrgCreatePage() {
                     className="btn primary"
                   >
                     {editingLeader ? 'Update Leader' : 'Add Leader'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Members Section */}
+        <div className="card">
+          <div className="card-header">
+            <h3>Members to Invite</h3>
+            <p className="muted">Add members who will receive email invitations to join this organization</p>
+          </div>
+          
+          <div className="card-body">
+            {members.length > 0 && (
+              <div className="table-container" style={{marginBottom: "1rem"}}>
+                <table className="table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Email</th>
+                      <th>Role</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {members.map((member, index) => (
+                      <tr key={index}>
+                        <td>{member.name}</td>
+                        <td>{member.email}</td>
+                        <td>{member.role}</td>
+                        <td>
+                          <button
+                            onClick={() => removeMember(index)}
+                            className="btn-sm btn-danger"
+                          >
+                            Remove
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            <button
+              type="button"
+              onClick={() => setShowMemberForm(true)}
+              className="btn secondary"
+            >
+              <Plus size={16} />
+              Add Member
+            </button>
+          </div>
+        </div>
+
+        {/* Member Form Modal */}
+        {showMemberForm && (
+          <div className="modal-overlay" onClick={resetMemberForm}>
+            <div className="modal" onClick={(e) => e.stopPropagation()}>
+              <div className="modal-header">
+                <h3>Add Member</h3>
+                <button onClick={resetMemberForm} className="btn ghost">×</button>
+              </div>
+              <form onSubmit={(e) => { e.preventDefault(); addMember(); }}>
+                <div className="modal-body">
+                  <div className="form-group">
+                    <label>Full Name *</label>
+                    <input
+                      type="text"
+                      value={memberForm.name}
+                      onChange={(e) => setMemberForm({...memberForm, name: e.target.value})}
+                      required
+                    />
+                  </div>
+                  
+                  <div className="form-group">
+                    <label>Email Address *</label>
+                    <input
+                      type="email"
+                      value={memberForm.email}
+                      onChange={(e) => setMemberForm({...memberForm, email: e.target.value})}
+                      required
+                    />
+                  </div>
+                  
+                  <div className="form-group">
+                    <label>Role *</label>
+                    <select
+                      value={memberForm.role}
+                      onChange={(e) => setMemberForm({...memberForm, role: e.target.value})}
+                      required
+                    >
+                      <option value="">Select Role</option>
+                      <option value="member">Member</option>
+                      <option value="volunteer">Volunteer</option>
+                      <option value="helper">Helper</option>
+                      <option value="supporter">Supporter</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <div className="modal-footer">
+                  <button
+                    type="button"
+                    onClick={resetMemberForm}
+                    className="btn secondary"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="btn primary"
+                  >
+                    Add Member
                   </button>
                 </div>
               </form>

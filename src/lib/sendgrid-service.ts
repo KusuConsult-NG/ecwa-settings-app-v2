@@ -11,6 +11,7 @@ export interface InviteEmailData {
   authCode: string
   organizationName: string
   inviterName: string
+  verificationLink?: string
 }
 
 export interface WelcomeEmailData {
@@ -74,6 +75,11 @@ export async function sendInviteEmail(data: InviteEmailData): Promise<boolean> {
               </div>
               
               <p>This code will expire in 24 hours for security reasons.</p>
+              
+              ${data.verificationLink ? `
+                <p>Click the button below to verify your invitation:</p>
+                <a href="${data.verificationLink}" class="button">Verify Invitation</a>
+              ` : ''}
               
               <p>Once you've entered the code, you'll be able to:</p>
               <ul>

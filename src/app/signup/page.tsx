@@ -49,22 +49,15 @@ export default function SignupPage() {
       const data = await response.json()
 
       if (data.success) {
-        if (data.emailSent && !data.user.isEmailVerified) {
-          // Show success message before redirecting
-          alert(`Account created successfully! Please check your email (${data.user.email}) for verification link. Check the browser console for the verification details.`)
-          // Redirect to email verification page
-          router.push(`/verify-email?email=${encodeURIComponent(data.user.email)}`)
-        } else {
-          // Store user data in localStorage for client-side access
-          localStorage.setItem('user', JSON.stringify(data.user))
-          localStorage.setItem('auth-token', data.user.id)
-          
-          // Dispatch custom event for topbar update
-          window.dispatchEvent(new CustomEvent('userLoggedIn', { detail: data.user }))
-          
-          // Redirect to dashboard
-          router.push('/dashboard')
-        }
+        // Store user data in localStorage for client-side access
+        localStorage.setItem('user', JSON.stringify(data.user))
+        localStorage.setItem('auth-token', data.user.id)
+        
+        // Dispatch custom event for topbar update
+        window.dispatchEvent(new CustomEvent('userLoggedIn', { detail: data.user }))
+        
+        // Redirect to dashboard
+        router.push('/dashboard')
       } else {
         if (data.errors && data.errors.length > 0) {
           setError(data.errors.map((err: any) => err.message).join(', '))
