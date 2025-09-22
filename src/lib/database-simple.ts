@@ -33,6 +33,8 @@ interface Expenditure {
   status: 'pending' | 'approved' | 'rejected'
   createdBy: string
   createdAt: string
+  approvedBy?: string
+  approvedAt?: string
 }
 
 interface Income {
@@ -161,6 +163,19 @@ export function createExpenditure(expData: Omit<Expenditure, 'id' | 'createdAt'>
 
 export function getAllExpenditures(): Expenditure[] {
   return expenditures
+}
+
+export function updateExpenditureStatus(id: string, status: 'pending' | 'approved' | 'rejected', approvedBy?: string): Expenditure | null {
+  const expenditure = expenditures.find(exp => exp.id === id)
+  if (expenditure) {
+    expenditure.status = status
+    if (approvedBy) {
+      expenditure.approvedBy = approvedBy
+      expenditure.approvedAt = new Date().toISOString()
+    }
+    return expenditure
+  }
+  return null
 }
 
 // Income operations

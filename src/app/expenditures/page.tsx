@@ -61,50 +61,36 @@ export default function ExpendituresPage() {
   const loadExpenditures = async () => {
     try {
       setIsLoading(true)
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
       
-      // Mock data
-      const mockExpenditures: Expenditure[] = [
-        {
-          id: '1',
-          title: 'Office Supplies Purchase',
-          description: 'Monthly office supplies including paper, pens, and notebooks',
-          amount: 250.00,
-          category: 'Office Supplies',
-          status: 'approved',
-          submittedBy: 'John Doe',
-          createdAt: '2024-01-15',
-          approvedBy: 'Jane Smith',
-          approvedAt: '2024-01-16'
-        },
-        {
-          id: '2',
-          title: 'Equipment Maintenance',
-          description: 'Annual maintenance for office equipment',
-          amount: 1200.00,
-          category: 'Equipment & Maintenance',
-          status: 'pending',
-          submittedBy: 'Mike Johnson',
-          createdAt: '2024-01-20'
-        },
-        {
-          id: '3',
-          title: 'Conference Registration',
-          description: 'Registration fees for annual industry conference',
-          amount: 800.00,
-          category: 'Events & Conferences',
-          status: 'rejected',
-          submittedBy: 'Sarah Wilson',
-          createdAt: '2024-01-18',
-          approvedBy: 'Jane Smith',
-          approvedAt: '2024-01-19'
-        }
-      ]
+      // Call the API to get expenditures
+      const response = await fetch('/api/expenditures')
+      const data = await response.json()
       
-      setExpenditures(mockExpenditures)
+      if (data.success) {
+        // Transform the data to match the expected format
+        const transformedExpenditures: Expenditure[] = data.data.map((exp: any) => ({
+          id: exp.id,
+          title: exp.title,
+          description: exp.description,
+          amount: exp.amount,
+          category: exp.category,
+          status: exp.status,
+          submittedBy: exp.createdBy,
+          createdAt: exp.createdAt,
+          approvedBy: exp.approvedBy,
+          approvedAt: exp.approvedAt
+        }))
+        
+        setExpenditures(transformedExpenditures)
+      } else {
+        console.error('Error loading expenditures:', data.message)
+        // Fallback to empty array if API fails
+        setExpenditures([])
+      }
     } catch (error) {
       console.error('Error loading expenditures:', error)
+      // Fallback to empty array if API fails
+      setExpenditures([])
     } finally {
       setIsLoading(false)
     }
@@ -135,19 +121,34 @@ export default function ExpendituresPage() {
 
   const handleStatusUpdate = async (id: string, status: 'approved' | 'rejected') => {
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500))
-      
-      setExpenditures(prev => prev.map(exp => 
-        exp.id === id 
-          ? { 
-              ...exp, 
-              status, 
-              approvedBy: 'Current User',
-              approvedAt: new Date().toISOString()
-            }
-          : exp
-      ))
+      const response = await fetch(`/api/expenditures/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          status,
+          approvedBy: 'Current User'
+        })
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        // Update the local state with the updated expenditure
+        setExpenditures(prev => prev.map(exp => 
+          exp.id === id 
+            ? { 
+                ...exp, 
+                status: data.data.status,
+                approvedBy: data.data.approvedBy,
+                approvedAt: data.data.approvedAt
+              }
+            : exp
+        ))
+      } else {
+        console.error('Error updating status:', data.message)
+      }
     } catch (error) {
       console.error('Error updating status:', error)
     }
@@ -160,19 +161,34 @@ export default function ExpendituresPage() {
 
   const handleReverseAction = async (id: string, newStatus: 'pending' | 'approved' | 'rejected') => {
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500))
-      
-      setExpenditures(prev => prev.map(exp => 
-        exp.id === id 
-          ? { 
-              ...exp, 
-              status: newStatus,
-              approvedBy: newStatus === 'pending' ? undefined : 'Current User',
-              approvedAt: newStatus === 'pending' ? undefined : new Date().toISOString()
-            }
-          : exp
-      ))
+      const response = await fetch(`/api/expenditures/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          status: newStatus,
+          approvedBy: newStatus === 'pending' ? undefined : 'Current User'
+        })
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        // Update the local state with the updated expenditure
+        setExpenditures(prev => prev.map(exp => 
+          exp.id === id 
+            ? { 
+                ...exp, 
+                status: data.data.status,
+                approvedBy: data.data.approvedBy,
+                approvedAt: data.data.approvedAt
+              }
+            : exp
+        ))
+      } else {
+        console.error('Error reversing action:', data.message)
+      }
     } catch (error) {
       console.error('Error reversing action:', error)
     }

@@ -81,31 +81,50 @@ export default function NewExpenditurePage() {
     }
 
     try {
-      // Simulate API call - in a real app, this would save to database
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      setSuccess("Expenditure recorded successfully!")
-      
-      // Reset form
-      setFormData({
-        title: "",
-        description: "",
-        amount: "",
-        category: "",
-        date: new Date().toISOString().split('T')[0],
-        vendor: "",
-        department: "",
-        paymentMethod: "cash",
-        receiptNumber: "",
-        notes: ""
+      // Call the API to create expenditure
+      const response = await fetch('/api/expenditures', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: formData.title,
+          description: formData.description,
+          amount: parseFloat(formData.amount),
+          category: formData.category,
+          createdBy: 'Current User' // In a real app, get from auth context
+        })
       })
 
-      // Redirect after 2 seconds
-      setTimeout(() => {
-        router.push('/expenditures')
-      }, 2000)
+      const data = await response.json()
+
+      if (data.success) {
+        setSuccess("Expenditure recorded successfully!")
+        
+        // Reset form
+        setFormData({
+          title: "",
+          description: "",
+          amount: "",
+          category: "",
+          date: new Date().toISOString().split('T')[0],
+          vendor: "",
+          department: "",
+          paymentMethod: "cash",
+          receiptNumber: "",
+          notes: ""
+        })
+
+        // Redirect after 2 seconds
+        setTimeout(() => {
+          router.push('/expenditures')
+        }, 2000)
+      } else {
+        setError(data.message || 'Failed to record expenditure. Please try again.')
+      }
 
     } catch (err) {
+      console.error('Error creating expenditure:', err)
       setError('Failed to record expenditure. Please try again.')
     } finally {
       setIsLoading(false)

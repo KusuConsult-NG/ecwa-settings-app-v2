@@ -31,7 +31,7 @@ export default function ExecutivePage() {
     const executivesData: Executive[] = [
       {
         id: "1",
-        title1: "Rev.",
+        title1: "Rev",
         title2: "Dr.",
         name: "John Doe",
         position: "President",
@@ -49,7 +49,7 @@ export default function ExecutivePage() {
       {
         id: "2",
         title1: "Pastor",
-        title2: "Prof.",
+        title2: "Prof",
         name: "Jane Smith",
         position: "General Secretary",
         department: "Education Department",
@@ -65,7 +65,7 @@ export default function ExecutivePage() {
       },
       {
         id: "3",
-        title1: "Elder",
+        title1: "Mr.",
         title2: "Engr.",
         name: "Michael Johnson",
         position: "Treasurer",

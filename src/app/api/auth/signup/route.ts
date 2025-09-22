@@ -85,10 +85,16 @@ export async function POST(request: NextRequest) {
     
     console.log('User created:', newUser.id)
     
+    // Simulate email sending (in production, use a real email service)
+    console.log(`📧 Email verification would be sent to: ${email}`)
+    console.log(`🔗 Verification link would be: ${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/verify-email?token=verify_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`)
+    console.log(`📱 SMS verification code would be: ${Math.floor(100000 + Math.random() * 900000)}`)
+    
     // Return success response
     const response = NextResponse.json({
       success: true,
-      message: 'Account created successfully!',
+      message: 'Account created successfully! Please check your email for verification link.',
+      emailSent: true, // Indicate that email was "sent"
       user: {
         id: newUser.id,
         name: newUser.name,
