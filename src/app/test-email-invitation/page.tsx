@@ -171,19 +171,19 @@ export default function TestEmailInvitationPage() {
         <div style={{marginTop: "2rem", padding: "1rem", backgroundColor: "var(--bg)", borderRadius: "8px", border: "1px solid var(--line)"}}>
           <h4 style={{margin: "0 0 1rem 0"}}>How to Test:</h4>
           <ol style={{margin: "0", paddingLeft: "1.5rem"}}>
-            <li>Fill in the form above and click "Send Test Invitation"</li>
-            <li>Open your browser's Developer Tools (F12)</li>
-            <li>Go to the Console tab</li>
-            <li>Look for the email details that were logged</li>
-            <li>The auth code will be displayed both in the success message and console</li>
+            <li>Fill in the form above with a real email address</li>
+            <li>Click "Send Test Invitation"</li>
+            <li>Check the recipient's email inbox for the invitation</li>
+            <li>The auth code will be displayed in the success message</li>
+            <li>Use the auth code to verify the invitation</li>
           </ol>
         </div>
 
-        <div style={{marginTop: "1rem", padding: "1rem", backgroundColor: "rgba(59, 130, 246, 0.1)", borderRadius: "8px", border: "1px solid rgba(59, 130, 246, 0.2)"}}>
-          <h4 style={{margin: "0 0 0.5rem 0", color: "var(--primary)"}}>Production Mode:</h4>
+        <div style={{marginTop: "1rem", padding: "1rem", backgroundColor: "rgba(16, 185, 129, 0.1)", borderRadius: "8px", border: "1px solid rgba(16, 185, 129, 0.2)"}}>
+          <h4 style={{margin: "0 0 0.5rem 0", color: "var(--success)"}}>✅ Real Email Sending Enabled!</h4>
           <p style={{margin: "0", fontSize: "0.875rem"}}>
-            To enable real email sending, set the <code>SENDGRID_API_KEY</code> environment variable 
-            in your production environment. The system will automatically switch to sending real emails.
+            SendGrid API key is configured. Emails will be sent to the actual email addresses provided.
+            Check the recipient's inbox for the invitation email.
           </p>
         </div>
       </div>
