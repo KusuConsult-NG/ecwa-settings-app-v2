@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createUser, findUserByEmail, hashPassword } from '@/lib/database-simple'
 
 export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
 
 export async function POST(request: NextRequest) {
   try {

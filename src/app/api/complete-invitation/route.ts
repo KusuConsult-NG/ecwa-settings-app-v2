@@ -4,6 +4,7 @@ import { createUser, findUserByEmail, hashPassword } from '@/lib/database-simple
 import { sign } from '@/lib/jwt'
 
 export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
 
 export async function POST(request: NextRequest) {
   try {

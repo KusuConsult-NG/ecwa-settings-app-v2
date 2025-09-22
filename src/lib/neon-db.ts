@@ -1,10 +1,16 @@
 // Neon Database Integration
 import { neon } from '@neondatabase/serverless'
 
-const DATABASE_URL = 'postgresql://neondb_owner:npg_8iVZwHmaxgy7@ep-old-truth-admsvs0a-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require'
+// Use environment variable with fallback and ensure SSL mode
+const DATABASE_URL = process.env.DATABASE_URL || 'postgresql://neondb_owner:npg_8iVZwHmaxgy7@ep-old-truth-admsvs0a-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require'
 
-// Initialize Neon client
-const sql = neon(DATABASE_URL)
+// Ensure SSL mode is required for security
+const secureDatabaseUrl = DATABASE_URL.includes('sslmode=require') 
+  ? DATABASE_URL 
+  : `${DATABASE_URL}${DATABASE_URL.includes('?') ? '&' : '?'}sslmode=require`
+
+// Initialize Neon client with secure URL
+const sql = neon(secureDatabaseUrl)
 
 // User interface
 interface User {

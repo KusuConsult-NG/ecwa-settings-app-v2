@@ -239,14 +239,16 @@ export function getAllBankAccounts(): BankAccount[] {
   return bankAccounts
 }
 
-// Simple password hashing (for demo purposes)
+// Password hashing with bcryptjs for consistency
+import bcrypt from 'bcryptjs'
+
 export function hashPassword(password: string): string {
-  // In production, use bcrypt or similar
-  return btoa(password) // Base64 encoding for demo
+  // Use bcryptjs for consistent hashing across dev and prod
+  return bcrypt.hashSync(password, 12)
 }
 
 export function verifyPassword(password: string, hashedPassword: string): boolean {
-  return btoa(password) === hashedPassword
+  return bcrypt.compareSync(password, hashedPassword)
 }
 
 // Executive operations

@@ -4,6 +4,7 @@ import { findUserByEmail, updateUser } from '@/lib/database-simple'
 import crypto from 'crypto'
 
 export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
 
 function hashPassword(password: string): string {
   const salt = crypto.randomBytes(16)
