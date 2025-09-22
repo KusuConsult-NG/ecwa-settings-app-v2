@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getOrganizations, createOrganization } from '@/lib/database-simple'
-import { sendInviteEmail } from '@/lib/sendgrid-service'
+import { sendInviteEmail } from '@/lib/gmail-service'
 import { createInvite } from '@/lib/inviteStore'
 import { sign } from '@/lib/jwt'
 
