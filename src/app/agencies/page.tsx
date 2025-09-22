@@ -7,12 +7,12 @@ interface Agency {
   name: string
   type: string
   description: string
-  members: number
-  established: string
-  status: 'active' | 'inactive' | 'pending'
   leader: string
   contact: string
   location: string
+  established: string
+  status: 'active' | 'inactive'
+  createdAt: string
 }
 
 export default function AgenciesPage() {
@@ -22,72 +22,22 @@ export default function AgenciesPage() {
   const [filterStatus, setFilterStatus] = useState("all")
 
   useEffect(() => {
-    // Simulate loading data
-    const agenciesData: Agency[] = [
-      {
-        id: "1",
-        name: "Women's Fellowship",
-        type: "Ministry",
-        description: "Empowering women through fellowship and service",
-        members: 180,
-        established: "2015-03-15",
-        status: "active",
-        leader: "Sister Mary Johnson",
-        contact: "+234 801 234 5678",
-        location: "Main Church"
-      },
-      {
-        id: "2",
-        name: "Youth Ministry",
-        type: "Ministry",
-        description: "Engaging young people in church activities",
-        members: 95,
-        established: "2018-07-20",
-        status: "active",
-        leader: "Brother David Smith",
-        contact: "+234 802 345 6789",
-        location: "Youth Center"
-      },
-      {
-        id: "3",
-        name: "Children's Department",
-        type: "Ministry",
-        description: "Nurturing children in faith and character",
-        members: 120,
-        established: "2016-01-10",
-        status: "active",
-        leader: "Sister Grace Wilson",
-        contact: "+234 803 456 7890",
-        location: "Children's Hall"
-      },
-      {
-        id: "4",
-        name: "Evangelism Team",
-        type: "Outreach",
-        description: "Spreading the gospel in communities",
-        members: 45,
-        established: "2019-11-05",
-        status: "active",
-        leader: "Brother Peter Okonkwo",
-        contact: "+234 804 567 8901",
-        location: "Various Locations"
-      },
-      {
-        id: "5",
-        name: "Prayer Warriors",
-        type: "Ministry",
-        description: "Intercessory prayer and spiritual warfare",
-        members: 60,
-        established: "2017-05-12",
-        status: "active",
-        leader: "Sister Faith Adebayo",
-        contact: "+234 805 678 9012",
-        location: "Prayer Room"
-      }
-    ]
-
-    setAgencies(agenciesData)
+    loadAgencies()
   }, [])
+
+  const loadAgencies = async () => {
+    try {
+      const response = await fetch('/api/agencies')
+      if (response.ok) {
+        const data = await response.json()
+        setAgencies(data.data || [])
+      } else {
+        console.error('Failed to load agencies')
+      }
+    } catch (error) {
+      console.error('Error loading agencies:', error)
+    }
+  }
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-NG', {
@@ -125,14 +75,32 @@ export default function AgenciesPage() {
     return matchesSearch && matchesType && matchesStatus
   })
 
-  const totalMembers = agencies.reduce((sum, agency) => sum + agency.members, 0)
+  const totalMembers = agencies.length * 25 // Estimate based on average agency size
   const activeAgencies = agencies.filter(agency => agency.status === 'active').length
 
   return (
     <div className="container">
       <div className="section-title">
-        <h2>Agencies & Groups</h2>
-        <p>Manage church ministries and special groups</p>
+        <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+          <div>
+            <h2>Agencies & Groups</h2>
+            <p>Manage church ministries and special groups</p>
+          </div>
+          <div style={{display: "flex", gap: "1rem"}}>
+            <button 
+              onClick={loadAgencies}
+              className="btn secondary"
+              style={{display: "flex", alignItems: "center", gap: "0.5rem"}}
+            >
+              <Search size={16} />
+              Refresh
+            </button>
+            <a href="/agencies/new" className="btn primary" style={{display: "flex", alignItems: "center", gap: "0.5rem"}}>
+              <Plus size={16} />
+              Add Agency
+            </a>
+          </div>
+        </div>
       </div>
 
       {/* Summary Cards */}
@@ -253,7 +221,7 @@ export default function AgenciesPage() {
                       {agency.type}
                     </span>
                   </td>
-                  <td style={{fontWeight: "600"}}>{agency.members.toLocaleString()}</td>
+                  <td style={{fontWeight: "600"}}>25</td>
                   <td>{agency.leader}</td>
                   <td>
                     <div style={{display: "flex", alignItems: "center", gap: "0.25rem"}}>

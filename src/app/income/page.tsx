@@ -1,6 +1,6 @@
 "use client"
 import { useState, useEffect } from "react"
-import { DollarSign, Plus, Search, Filter, Download, Eye, Edit, Trash2, TrendingUp } from "lucide-react"
+import { DollarSign, Plus, Search, Filter, Download, Eye, Edit, Trash2, TrendingUp, RefreshCw } from "lucide-react"
 
 interface Income {
   id: string
@@ -20,53 +20,39 @@ export default function IncomePage() {
   const [totalIncome, setTotalIncome] = useState(0)
 
   useEffect(() => {
-    // Simulate loading data
-    const incomeData: Income[] = [
-      {
-        id: "1",
-        title: "Sunday Service Offering",
-        amount: 45000,
-        category: "Offering",
-        date: "2024-01-15",
-        source: "Main Service",
-        description: "Regular Sunday service offering",
-        recordedBy: "John Doe"
-      },
-      {
-        id: "2",
-        title: "Tithe Collection",
-        amount: 32000,
-        category: "Tithe",
-        date: "2024-01-14",
-        source: "Members",
-        description: "Monthly tithe collection",
-        recordedBy: "Jane Smith"
-      },
-      {
-        id: "3",
-        title: "Youth Ministry Donation",
-        amount: 15000,
-        category: "Donation",
-        date: "2024-01-12",
-        source: "Youth Ministry",
-        description: "Special donation for youth activities",
-        recordedBy: "Mike Johnson"
-      },
-      {
-        id: "4",
-        title: "Building Fund",
-        amount: 75000,
-        category: "Building Fund",
-        date: "2024-01-10",
-        source: "Special Collection",
-        description: "Building fund contribution",
-        recordedBy: "Sarah Wilson"
-      }
-    ]
-
-    setIncome(incomeData)
-    setTotalIncome(incomeData.reduce((sum, item) => sum + item.amount, 0))
+    loadIncome()
   }, [])
+
+  const loadIncome = async () => {
+    try {
+      const response = await fetch('/api/income')
+      if (response.ok) {
+        const data = await response.json()
+        if (data.success) {
+          // Transform the data to match the expected format
+          const transformedIncome: Income[] = data.data.map((item: any) => ({
+            id: item.id,
+            title: item.source,
+            amount: item.amount,
+            category: item.source.includes('Tithe') ? 'Tithe' : 
+                     item.source.includes('Offering') ? 'Offering' :
+                     item.source.includes('Donation') ? 'Donation' : 'Other',
+            date: item.date,
+            source: item.source,
+            description: `Income recorded on ${item.date}`,
+            recordedBy: item.recordedBy
+          }))
+          
+          setIncome(transformedIncome)
+          setTotalIncome(transformedIncome.reduce((sum, item) => sum + item.amount, 0))
+        }
+      } else {
+        console.error('Failed to load income data')
+      }
+    } catch (error) {
+      console.error('Error loading income data:', error)
+    }
+  }
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-NG', {
@@ -104,8 +90,26 @@ export default function IncomePage() {
   return (
     <div className="container">
       <div className="section-title">
-        <h2>Income Management</h2>
-        <p>Track and manage church income sources</p>
+        <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+          <div>
+            <h2>Income Management</h2>
+            <p>Track and manage church income sources</p>
+          </div>
+          <div style={{display: "flex", gap: "1rem"}}>
+            <button 
+              onClick={loadIncome}
+              className="btn secondary"
+              style={{display: "flex", alignItems: "center", gap: "0.5rem"}}
+            >
+              <RefreshCw size={16} />
+              Refresh
+            </button>
+            <a href="/income/new" className="btn primary" style={{display: "flex", alignItems: "center", gap: "0.5rem"}}>
+              <Plus size={16} />
+              Add Income
+            </a>
+          </div>
+        </div>
       </div>
 
       {/* Security Notice */}
