@@ -11,11 +11,11 @@ type Org = { id: string; name: string; type: string; parentId?: string }
 // ECWA Organizational Roles by Level
 const ORGANIZATIONAL_ROLES = {
   GCC: [
-    { id: 'president', name: 'President', required: true },
+    { id: 'president', name: 'President', required: false },
     { id: 'vice-president', name: 'Vice President', required: false },
-    { id: 'general-secretary', name: 'General Secretary', required: true },
+    { id: 'general-secretary', name: 'General Secretary', required: false },
     { id: 'assistant-secretary', name: 'Assistant Secretary', required: false },
-    { id: 'treasurer', name: 'Treasurer', required: true },
+    { id: 'treasurer', name: 'Treasurer', required: false },
     { id: 'financial-secretary', name: 'Financial Secretary', required: false },
     { id: 'evangelism-secretary', name: 'Evangelism Secretary', required: false },
     { id: 'youth-secretary', name: 'Youth Secretary', required: false },
@@ -28,25 +28,25 @@ const ORGANIZATIONAL_ROLES = {
     { id: 'auditor', name: 'Auditor', required: false }
   ],
   DCC: [
-    { id: 'chairman', name: 'Chairman', required: true },
+    { id: 'chairman', name: 'Chairman', required: false },
     { id: 'vice-chairman', name: 'Vice Chairman', required: false },
-    { id: 'district-secretary', name: 'District Secretary', required: true },
+    { id: 'district-secretary', name: 'District Secretary', required: false },
     { id: 'assistant-secretary', name: 'Assistant District Secretary', required: false },
-    { id: 'treasurer', name: 'Treasurer', required: true },
+    { id: 'treasurer', name: 'Treasurer', required: false },
     { id: 'financial-secretary', name: 'Financial Secretary', required: false },
     { id: 'delegate', name: 'Delegate', required: false },
     { id: 'cel', name: 'CEL (Church Education Leader)', required: false }
   ],
   LCC: [
-    { id: 'local-overseer', name: 'Local Overseer (LO)', required: true },
+    { id: 'local-overseer', name: 'Local Overseer (LO)', required: false },
     { id: 'assistant-lo', name: 'Assistant Local Overseer', required: false },
-    { id: 'secretary', name: 'Secretary', required: true },
-    { id: 'treasurer', name: 'Treasurer', required: true },
+    { id: 'secretary', name: 'Secretary', required: false },
+    { id: 'treasurer', name: 'Treasurer', required: false },
     { id: 'financial-secretary', name: 'Financial Secretary', required: false },
     { id: 'delegate', name: 'Delegate', required: false }
   ],
   LC: [
-    { id: 'senior-minister', name: 'Senior Minister', required: true },
+    { id: 'senior-minister', name: 'Senior Minister', required: false },
     { id: 'associate-minister', name: 'Associate Minister', required: false },
     { id: 'pastor', name: 'Pastor', required: false },
     { id: 'elder-treasurer', name: 'Elder - Treasurer', required: false },
@@ -377,32 +377,8 @@ export default function OrgCreatePage() {
     }
 
     console.log('Organization type:', orgType)
-    const availableRoles = getAvailableRoles()
-    console.log('Available roles:', availableRoles)
-    
-    // Only validate leaders if we have available roles
-    if (availableRoles.length === 0) {
-      setMessage("No roles available for this organization type")
-      return
-    }
-    
-    const requiredRoles = availableRoles.filter(role => role.required)
-    console.log('Required roles:', requiredRoles)
     console.log('Current leaders:', leaders)
-    console.log('Leader positions:', leaders.map(l => l.position))
-    
-    const hasRequiredLeaders = requiredRoles.every(role => 
-      leaders.some(leader => leader.position === role.id)
-    )
-
-    if (!hasRequiredLeaders) {
-      const missingRoles = requiredRoles.filter(role => 
-        !leaders.some(leader => leader.position === role.id)
-      )
-      console.log('Missing roles:', missingRoles)
-      setMessage(`Please add leaders for all required positions: ${missingRoles.map(r => r.name).join(', ')}`)
-      return
-    }
+    console.log('Current members:', members)
 
     setLoading(true)
     try {
@@ -612,14 +588,9 @@ export default function OrgCreatePage() {
                   <div style={{textAlign: 'center', padding: '2rem', backgroundColor: 'var(--surface)', borderRadius: '8px'}}>
                     <Users size={48} style={{color: 'var(--muted)', marginBottom: '1rem'}} />
                     <p className="muted">No leaders added yet. Click "Add Leader" to get started.</p>
-                    {orgType && (
-                      <div style={{marginTop: '1rem', padding: '1rem', backgroundColor: '#fef3c7', borderRadius: '8px', border: '1px solid #f59e0b'}}>
-                        <p style={{margin: '0 0 0.5rem 0', fontWeight: 'bold', color: '#92400e'}}>Required Positions for {orgType}:</p>
-                        <p style={{margin: '0', fontSize: '0.875rem', color: '#92400e'}}>
-                          {getAvailableRoles().filter(role => role.required).map(role => role.name).join(', ')}
-                        </p>
-                      </div>
-                    )}
+                    <p className="muted" style={{fontSize: '0.875rem', marginTop: '0.5rem'}}>
+                      Leaders are optional but recommended for proper organization management.
+                    </p>
                   </div>
                 ) : (
                   <div style={{display: 'grid', gap: '1rem'}}>
@@ -716,13 +687,6 @@ export default function OrgCreatePage() {
                       <option value="Pastor">Pastor</option>
                       <option value="Pst.">Pst.</option>
                       <option value="Elder">Elder</option>
-                      <option value="Bishop">Bishop</option>
-                      <option value="Archbishop">Archbishop</option>
-                      <option value="Canon">Canon</option>
-                      <option value="Venerable">Venerable</option>
-                      <option value="Very Rev.">Very Rev.</option>
-                      <option value="Rt. Rev.">Rt. Rev.</option>
-                      <option value="Most Rev.">Most Rev.</option>
                       <option value="Mr.">Mr.</option>
                       <option value="Mrs.">Mrs.</option>
                       <option value="Miss">Miss</option>

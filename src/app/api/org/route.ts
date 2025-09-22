@@ -101,8 +101,42 @@ export async function POST(request: NextRequest) {
       status: 'active'
     })
 
+    // Send invitations to leaders
+    let leaderInvitationsSent = 0
+    if (leaders && Array.isArray(leaders)) {
+      for (const leader of leaders) {
+        try {
+          // Create invite in the store for leaders
+          const invite = createInvite(
+            leader.email,
+            `${leader.firstName} ${leader.surname}`,
+            'leader',
+            newOrg.id,
+            name
+          )
+          
+          // Create verification link
+          const verificationLink = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/accept?email=${encodeURIComponent(leader.email)}&inviteId=${invite.id}`
+          
+          await sendInviteEmail({
+            to: leader.email,
+            name: `${leader.firstName} ${leader.surname}`,
+            organizationName: name,
+            inviterName: 'Organization Admin',
+            authCode: invite.code,
+            verificationLink
+          })
+          
+          leaderInvitationsSent++
+          console.log(`Leader invitation sent to ${leader.email} with code: ${invite.code}`)
+        } catch (error) {
+          console.error(`Failed to send leader invitation to ${leader.email}:`, error)
+        }
+      }
+    }
+
     // Send invitations to members
-    let invitationsSent = 0
+    let memberInvitationsSent = 0
     if (members && Array.isArray(members)) {
       for (const member of members) {
         try {
@@ -127,10 +161,10 @@ export async function POST(request: NextRequest) {
             verificationLink
           })
           
-          invitationsSent++
-          console.log(`Invitation sent to ${member.email} with code: ${invite.code}`)
+          memberInvitationsSent++
+          console.log(`Member invitation sent to ${member.email} with code: ${invite.code}`)
         } catch (error) {
-          console.error(`Failed to send invitation to ${member.email}:`, error)
+          console.error(`Failed to send member invitation to ${member.email}:`, error)
         }
       }
     }
@@ -141,12 +175,16 @@ export async function POST(request: NextRequest) {
     console.log('Members invited:', members)
     console.log('Contact info:', { email, phone, address })
 
+    const totalInvitations = leaderInvitationsSent + memberInvitationsSent
     return NextResponse.json({
       success: true,
       org: newOrg,
-      message: `${type} created successfully! ${invitationsSent} invitation(s) sent to members.`,
+      message: `${type} created successfully! ${leaderInvitationsSent} leader invitation(s) and ${memberInvitationsSent} member invitation(s) sent.`,
       leadersCount: leaders?.length || 0,
-      membersInvited: invitationsSent
+      membersCount: members?.length || 0,
+      leaderInvitationsSent,
+      memberInvitationsSent,
+      totalInvitations
     })
   } catch (error) {
     console.error('Organization creation error:', error)
