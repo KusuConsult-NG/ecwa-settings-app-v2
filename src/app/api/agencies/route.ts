@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAgency, getAllAgencies, updateAgency, deleteAgency } from '@/lib/database-simple'
+import { sendInviteEmail } from '@/lib/sendgrid-service'
+import { createMagicInvite } from '@/lib/magic-link-store'
 
 export const dynamic = 'force-dynamic'
 
@@ -31,7 +33,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const { name, type, description, leader, contact, location, established, status } = await request.json()
+    const { name, type, description, leader, contact, location, established, status, email } = await request.json()
     
     if (!name || !type || !leader || !contact) {
       return NextResponse.json({ success: false, message: 'Name, type, leader, and contact are required' }, { status: 400 })
@@ -47,8 +49,48 @@ export async function POST(request: NextRequest) {
       established: established || new Date().toISOString().split('T')[0],
       status: status || 'active'
     })
+
+    // Send magic link invitation if email is provided
+    if (email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      try {
+        // Create magic invite
+        const invite = createMagicInvite(
+          email,
+          leader,
+          'Agency Leader',
+          newAgency.id,
+          name,
+          'System Administrator'
+        )
+        
+        // Create magic link
+        const magicLink = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/verify-invite?token=${invite.magicToken}`
+        
+        // Create verification link (fallback)
+        const verificationLink = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/accept?email=${encodeURIComponent(email)}&code=${invite.authCode}`
+        
+        await sendInviteEmail({
+          to: email,
+          name: leader,
+          organizationName: name,
+          inviterName: 'System Administrator',
+          authCode: invite.authCode,
+          magicLink,
+          verificationLink
+        })
+        
+        console.log(`Agency leader invitation sent to ${email} with code: ${invite.authCode} and magic link: ${magicLink}`)
+      } catch (error) {
+        console.error(`Failed to send agency leader invitation to ${email}:`, error)
+        // Don't fail the creation if email sending fails
+      }
+    }
     
-    return NextResponse.json({ success: true, data: newAgency, message: 'Agency created successfully!' }, { status: 201 })
+    return NextResponse.json({ 
+      success: true, 
+      data: newAgency, 
+      message: email ? 'Agency created successfully and invitation sent!' : 'Agency created successfully!'
+    }, { status: 201 })
   } catch (error: any) {
     console.error('Error creating agency:', error)
     return NextResponse.json({ success: false, message: 'Failed to create agency', error: error.message }, { status: 500 })

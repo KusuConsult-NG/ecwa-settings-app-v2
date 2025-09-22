@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createExecutive, getAllExecutives, updateExecutive, deleteExecutive } from '@/lib/database-simple'
+import { sendInviteEmail } from '@/lib/sendgrid-service'
+import { createMagicInvite } from '@/lib/magic-link-store'
 
 export const dynamic = 'force-dynamic'
 
@@ -50,8 +52,46 @@ export async function POST(request: NextRequest) {
       salary: salary ? parseFloat(salary) : 0,
       status: status || 'active'
     })
+
+    // Send magic link invitation to the executive
+    try {
+      // Create magic invite
+      const invite = createMagicInvite(
+        email,
+        name,
+        position,
+        'executive-org', // Default organization ID for executives
+        'ECWA Executive Team',
+        'System Administrator'
+      )
+      
+      // Create magic link
+      const magicLink = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/verify-invite?token=${invite.magicToken}`
+      
+      // Create verification link (fallback)
+      const verificationLink = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/accept?email=${encodeURIComponent(email)}&code=${invite.authCode}`
+      
+      await sendInviteEmail({
+        to: email,
+        name: name,
+        organizationName: 'ECWA Executive Team',
+        inviterName: 'System Administrator',
+        authCode: invite.authCode,
+        magicLink,
+        verificationLink
+      })
+      
+      console.log(`Executive invitation sent to ${email} with code: ${invite.authCode} and magic link: ${magicLink}`)
+    } catch (error) {
+      console.error(`Failed to send executive invitation to ${email}:`, error)
+      // Don't fail the creation if email sending fails
+    }
     
-    return NextResponse.json({ success: true, data: newExecutive }, { status: 201 })
+    return NextResponse.json({ 
+      success: true, 
+      data: newExecutive,
+      message: 'Executive created successfully and invitation sent!'
+    }, { status: 201 })
   } catch (error: any) {
     console.error('Error creating executive:', error)
     return NextResponse.json({ success: false, message: 'Failed to create executive', error: error.message }, { status: 500 })
