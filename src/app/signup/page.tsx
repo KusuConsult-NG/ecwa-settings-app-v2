@@ -50,6 +50,8 @@ export default function SignupPage() {
 
       if (data.success) {
         if (data.emailSent && !data.user.isEmailVerified) {
+          // Show success message before redirecting
+          alert(`Account created successfully! Please check your email (${data.user.email}) for verification link. Check the browser console for the verification details.`)
           // Redirect to email verification page
           router.push(`/verify-email?email=${encodeURIComponent(data.user.email)}`)
         } else {

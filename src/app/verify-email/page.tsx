@@ -29,10 +29,10 @@ function VerifyEmailContent() {
       await new Promise(resolve => setTimeout(resolve, 1000))
       
       console.log(`📧 Verification email resent to: ${email}`)
-      console.log(`🔗 New verification link: ${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/verify-email?token=verify_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`)
+      console.log(`🔗 New verification link: ${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'}/verify-email?token=verify_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`)
       
-      // Show success message
-      setIsVerified(true)
+      // Show success message instead of auto-verifying
+      alert(`Verification email resent to ${email}. Check the console for the verification link.`)
     } catch (error) {
       setError('Failed to resend verification email. Please try again.')
     } finally {
