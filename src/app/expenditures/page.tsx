@@ -20,6 +20,8 @@ export default function ExpendituresPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [filter, setFilter] = useState('all')
   const [searchTerm, setSearchTerm] = useState('')
+  const [selectedExpenditure, setSelectedExpenditure] = useState<Expenditure | null>(null)
+  const [showModal, setShowModal] = useState(false)
   const router = useRouter()
 
   const categories = [
@@ -149,6 +151,36 @@ export default function ExpendituresPage() {
     } catch (error) {
       console.error('Error updating status:', error)
     }
+  }
+
+  const handleViewExpenditure = (expenditure: Expenditure) => {
+    setSelectedExpenditure(expenditure)
+    setShowModal(true)
+  }
+
+  const handleReverseAction = async (id: string, newStatus: 'pending' | 'approved' | 'rejected') => {
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 500))
+      
+      setExpenditures(prev => prev.map(exp => 
+        exp.id === id 
+          ? { 
+              ...exp, 
+              status: newStatus,
+              approvedBy: newStatus === 'pending' ? undefined : 'Current User',
+              approvedAt: newStatus === 'pending' ? undefined : new Date().toISOString()
+            }
+          : exp
+      ))
+    } catch (error) {
+      console.error('Error reversing action:', error)
+    }
+  }
+
+  const closeModal = () => {
+    setShowModal(false)
+    setSelectedExpenditure(null)
   }
 
   const handleExport = () => {
@@ -304,8 +336,51 @@ export default function ExpendituresPage() {
                           </button>
                         </>
                       )}
-                      <button className="btn btn-sm secondary">
-                        View
+                      
+                      {exp.status === 'approved' && (
+                        <>
+                          <button
+                            className="btn btn-sm warning"
+                            onClick={() => handleReverseAction(exp.id, 'pending')}
+                            title="Move back to pending for review"
+                          >
+                            ⏳ Revert
+                          </button>
+                          <button
+                            className="btn btn-sm error"
+                            onClick={() => handleReverseAction(exp.id, 'rejected')}
+                            title="Change to rejected"
+                          >
+                            ❌ Reject
+                          </button>
+                        </>
+                      )}
+                      
+                      {exp.status === 'rejected' && (
+                        <>
+                          <button
+                            className="btn btn-sm warning"
+                            onClick={() => handleReverseAction(exp.id, 'pending')}
+                            title="Move back to pending for review"
+                          >
+                            ⏳ Revert
+                          </button>
+                          <button
+                            className="btn btn-sm success"
+                            onClick={() => handleReverseAction(exp.id, 'approved')}
+                            title="Change to approved"
+                          >
+                            ✅ Approve
+                          </button>
+                        </>
+                      )}
+                      
+                      <button 
+                        className="btn btn-sm secondary"
+                        onClick={() => handleViewExpenditure(exp)}
+                        title="View full details"
+                      >
+                        👁️ View
                       </button>
                     </div>
                   </td>
@@ -327,6 +402,152 @@ export default function ExpendituresPage() {
           </div>
         )}
       </div>
+
+      {/* Expenditure Details Modal */}
+      {showModal && selectedExpenditure && (
+        <div className="modal-overlay" onClick={closeModal}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Expenditure Details</h2>
+              <button className="btn-close" onClick={closeModal}>×</button>
+            </div>
+            
+            <div className="modal-body">
+              <div className="detail-grid">
+                <div className="detail-item">
+                  <label>Title:</label>
+                  <span>{selectedExpenditure.title}</span>
+                </div>
+                
+                <div className="detail-item">
+                  <label>Description:</label>
+                  <span>{selectedExpenditure.description}</span>
+                </div>
+                
+                <div className="detail-item">
+                  <label>Amount:</label>
+                  <span className="amount">{formatCurrency(selectedExpenditure.amount)}</span>
+                </div>
+                
+                <div className="detail-item">
+                  <label>Category:</label>
+                  <span className="category">{selectedExpenditure.category}</span>
+                </div>
+                
+                <div className="detail-item">
+                  <label>Status:</label>
+                  <span className={`status status-${statusColors[selectedExpenditure.status]}`}>
+                    {statusIcons[selectedExpenditure.status]} {selectedExpenditure.status}
+                  </span>
+                </div>
+                
+                <div className="detail-item">
+                  <label>Submitted By:</label>
+                  <span>{selectedExpenditure.submittedBy}</span>
+                </div>
+                
+                <div className="detail-item">
+                  <label>Created Date:</label>
+                  <span>{formatDate(selectedExpenditure.createdAt)}</span>
+                </div>
+                
+                {selectedExpenditure.approvedBy && (
+                  <div className="detail-item">
+                    <label>Approved By:</label>
+                    <span>{selectedExpenditure.approvedBy}</span>
+                  </div>
+                )}
+                
+                {selectedExpenditure.approvedAt && (
+                  <div className="detail-item">
+                    <label>Approved Date:</label>
+                    <span>{formatDate(selectedExpenditure.approvedAt)}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            <div className="modal-footer">
+              <div className="action-buttons">
+                {selectedExpenditure.status === 'pending' && (
+                  <>
+                    <button
+                      className="btn success"
+                      onClick={() => {
+                        handleStatusUpdate(selectedExpenditure.id, 'approved')
+                        closeModal()
+                      }}
+                    >
+                      Approve
+                    </button>
+                    <button
+                      className="btn error"
+                      onClick={() => {
+                        handleStatusUpdate(selectedExpenditure.id, 'rejected')
+                        closeModal()
+                      }}
+                    >
+                      Reject
+                    </button>
+                  </>
+                )}
+                
+                {selectedExpenditure.status === 'approved' && (
+                  <>
+                    <button
+                      className="btn warning"
+                      onClick={() => {
+                        handleReverseAction(selectedExpenditure.id, 'pending')
+                        closeModal()
+                      }}
+                    >
+                      Revert to Pending
+                    </button>
+                    <button
+                      className="btn error"
+                      onClick={() => {
+                        handleReverseAction(selectedExpenditure.id, 'rejected')
+                        closeModal()
+                      }}
+                    >
+                      Change to Rejected
+                    </button>
+                  </>
+                )}
+                
+                {selectedExpenditure.status === 'rejected' && (
+                  <>
+                    <button
+                      className="btn warning"
+                      onClick={() => {
+                        handleReverseAction(selectedExpenditure.id, 'pending')
+                        closeModal()
+                      }}
+                    >
+                      Revert to Pending
+                    </button>
+                    <button
+                      className="btn success"
+                      onClick={() => {
+                        handleReverseAction(selectedExpenditure.id, 'approved')
+                        closeModal()
+                      }}
+                    >
+                      Change to Approved
+                    </button>
+                  </>
+                )}
+              </div>
+              
+              <button className="btn secondary" onClick={closeModal}>
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
+
+

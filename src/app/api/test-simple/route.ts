@@ -17,3 +17,4 @@ export async function POST() {
     timestamp: new Date().toISOString()
   })
 }
+

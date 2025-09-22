@@ -5,16 +5,10 @@ export const dynamic = 'force-dynamic'
 
 export async function POST(request: NextRequest) {
   try {
-    console.log('🔐 LOGIN API CALLED')
-    console.log('🔐 Request URL:', request.url)
-    console.log('🔐 Request method:', request.method)
-    console.log('🔐 Request headers:', Object.fromEntries(request.headers.entries()))
-    
     // Parse request body
     const body = await request.json()
-    console.log('🔐 Request body:', body)
     
-    // Basic validation
+    // Enhanced validation
     const { email, password } = body
     
     if (!email || !password) {
@@ -26,14 +20,44 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
+
+    // Validate email format
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          message: 'Invalid email format'
+        },
+        { status: 400 }
+      )
+    }
+
+    // Validate password length
+    if (password.length < 6) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          message: 'Password must be at least 6 characters'
+        },
+        { status: 400 }
+      )
+    }
     
     // Find user
-    const user = findUserByEmail(email)
+    const user = findUserByEmail(email.toLowerCase().trim())
     
     if (!user || !verifyPassword(password, user.password)) {
       return NextResponse.json(
         { success: false, message: 'Invalid email or password' },
         { status: 401 }
+      )
+    }
+
+    // Check if user is active
+    if (user.status !== 'active') {
+      return NextResponse.json(
+        { success: false, message: 'Account is not active. Please contact administrator.' },
+        { status: 403 }
       )
     }
     
@@ -54,12 +78,13 @@ export async function POST(request: NextRequest) {
       }
     })
     
-    // Set HTTP-only cookie
+    // Set HTTP-only cookie with enhanced security
     response.cookies.set('auth-token', user.id, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 7 // 7 days
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+      path: '/'
     })
     
     return response

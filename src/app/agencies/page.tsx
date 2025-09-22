@@ -272,7 +272,11 @@ export default function AgenciesPage() {
                       <button className="btn-sm btn-secondary" title="View">
                         <Eye size={14} />
                       </button>
-                      <button className="btn-sm btn-secondary" title="Edit">
+                      <button 
+                        className="btn-sm btn-secondary" 
+                        title="Edit Agency"
+                        onClick={() => window.location.href = `/agencies/edit/${agency.id}`}
+                      >
                         <Edit size={14} />
                       </button>
                       <button className="btn-sm btn-danger" title="Delete">

@@ -255,3 +255,5 @@ export async function getAllBankAccounts() {
   `
   return result
 }
+
+

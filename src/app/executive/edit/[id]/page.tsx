@@ -1,11 +1,12 @@
 "use client"
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { useRouter, useParams } from 'next/navigation'
+import { ArrowLeft, Save, User } from 'lucide-react'
 
-export default function NewExecutivePage() {
+export default function EditExecutivePage() {
   const [formData, setFormData] = useState({
-    title1: '', // Rev., Pst., etc.
-    title2: '', // Dr., Prof., etc.
+    title1: '', // Religious title
+    title2: '', // Academic/Professional title
     name: '',
     position: '',
     department: '',
@@ -20,6 +21,7 @@ export default function NewExecutivePage() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const router = useRouter()
+  const params = useParams()
 
   // ECWA Executive Positions
   const ecwaPositions = [
@@ -77,6 +79,41 @@ export default function NewExecutivePage() {
     'Dame'
   ]
 
+  useEffect(() => {
+    // Load executive data
+    loadExecutiveData()
+  }, [params.id])
+
+  const loadExecutiveData = async () => {
+    try {
+      setIsLoading(true)
+      // Simulate API call to load executive data
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      // Mock data - in real app, this would come from API
+      const executiveData = {
+        title1: 'Rev.',
+        title2: 'Dr.',
+        name: 'John Doe',
+        position: 'President',
+        department: '',
+        email: 'president@ecwa.com',
+        phone: '+234 801 234 5678',
+        address: '123 Church Street, Jos, Plateau State',
+        startDate: '2020-01-01',
+        salary: '500000',
+        status: 'elected'
+      }
+      
+      setFormData(executiveData)
+    } catch (error) {
+      console.error('Error loading executive data:', error)
+      setError('Failed to load executive data')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setFormData(prev => ({
@@ -95,37 +132,53 @@ export default function NewExecutivePage() {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000))
       
-      console.log('Executive data:', formData)
-      setSuccess('Executive member added successfully!')
+      console.log('Updated executive data:', formData)
+      setSuccess('Executive member updated successfully!')
       
-      // Reset form
-      setFormData({
-        title1: '',
-        title2: '',
-        name: '',
-        position: '',
-        department: '',
-        email: '',
-        phone: '',
-        address: '',
-        startDate: '',
-        salary: '',
-        status: 'active'
-      })
+      // Redirect after 2 seconds
+      setTimeout(() => {
+        router.push('/executive')
+      }, 2000)
       
     } catch (error) {
-      setError('Failed to add executive member. Please try again.')
+      setError('Failed to update executive member. Please try again.')
     } finally {
       setIsLoading(false)
     }
+  }
+
+  if (isLoading && !formData.name) {
+    return (
+      <div className="container">
+        <div className="card" style={{textAlign: "center", padding: "3rem"}}>
+          <div className="loading">Loading executive data...</div>
+        </div>
+      </div>
+    )
   }
 
   return (
     <div className="container">
       <div className="card">
         <div className="card-header">
-          <h1>Add New Executive Member</h1>
-          <p className="muted">Add a new executive member to the organization</p>
+          <div style={{display: "flex", alignItems: "center", gap: "1rem", marginBottom: "1rem"}}>
+            <button 
+              onClick={() => router.back()}
+              className="btn ghost"
+              style={{padding: "0.5rem"}}
+            >
+              <ArrowLeft size={20} />
+            </button>
+            <div>
+              <h1 style={{margin: 0, display: "flex", alignItems: "center", gap: "0.5rem"}}>
+                <User size={24} />
+                Edit Executive Member
+              </h1>
+              <p className="muted" style={{margin: "0.25rem 0 0 0"}}>
+                Update executive member information
+              </p>
+            </div>
+          </div>
         </div>
 
         {error && (
@@ -323,7 +376,7 @@ export default function NewExecutivePage() {
               className="btn primary"
               disabled={isLoading}
             >
-              {isLoading ? 'Adding...' : 'Add Executive Member'}
+              {isLoading ? 'Updating...' : 'Update Executive Member'}
             </button>
           </div>
         </form>
@@ -331,5 +384,3 @@ export default function NewExecutivePage() {
     </div>
   )
 }
-
-

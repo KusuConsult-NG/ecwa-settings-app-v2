@@ -51,6 +51,17 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
+
+    // Validate email format
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          message: 'Invalid email format'
+        },
+        { status: 400 }
+      )
+    }
     
     // Check if user already exists
     const existingUser = findUserByEmail(email)
@@ -66,11 +77,10 @@ export async function POST(request: NextRequest) {
       name,
       email,
       password: hashPassword(password),
-      role: "Member",
+      role: "user",
       organization: "ChurchFlow",
       phone,
-      address,
-      isEmailVerified: true // Skip email verification for demo
+      address
     })
     
     console.log('User created:', newUser.id)

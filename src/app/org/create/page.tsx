@@ -61,6 +61,7 @@ const ORGANIZATIONAL_ROLES = {
 type Leader = {
   id: string
   title: string
+  academicTitle: string
   firstName: string
   surname: string
   otherNames: string
@@ -82,6 +83,7 @@ export default function OrgCreatePage() {
   const [editingLeader, setEditingLeader] = useState<Leader | null>(null)
   const [leaderForm, setLeaderForm] = useState({
     title: '',
+    academicTitle: '',
     firstName: '',
     surname: '',
     otherNames: '',
@@ -197,6 +199,7 @@ export default function OrgCreatePage() {
 
     setLeaderForm({
       title: '',
+      academicTitle: '',
       firstName: '',
       surname: '',
       otherNames: '',
@@ -212,6 +215,7 @@ export default function OrgCreatePage() {
     setEditingLeader(leader)
     setLeaderForm({
       title: leader.title,
+      academicTitle: leader.academicTitle,
       firstName: leader.firstName,
       surname: leader.surname,
       otherNames: leader.otherNames,
@@ -265,8 +269,8 @@ export default function OrgCreatePage() {
       })
 
       if (response.ok) {
-        const { org } = await response.json()
-        setMessage(`${orgType} created successfully! Verification codes sent to all leaders.`)
+        const data = await response.json()
+        setMessage(data.message || `${orgType} created successfully! Verification codes sent to all leaders.`)
         
         // Reset form
         setOrgName("")
@@ -278,7 +282,7 @@ export default function OrgCreatePage() {
         setOrgType("")
       } else {
         const error = await response.json()
-        setMessage(`Error: ${error.error || 'Failed to create organization'}`)
+        setMessage(`Error: ${error.message || error.error || 'Failed to create organization'}`)
       }
     } catch (error) {
       console.error('Error creating organization:', error)
@@ -453,7 +457,7 @@ export default function OrgCreatePage() {
                         <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
                           <div>
                             <h4 style={{margin: '0 0 0.25rem 0'}}>
-                              {leader.title} {leader.firstName} {leader.surname} {leader.otherNames}
+                              {[leader.title, leader.academicTitle].filter(Boolean).join(' ')} {leader.firstName} {leader.surname} {leader.otherNames}
                             </h4>
                             <p style={{margin: '0 0 0.5rem 0', color: 'var(--muted)'}}>
                               {getAvailableRoles().find(role => role.id === leader.position)?.name}
@@ -523,21 +527,52 @@ export default function OrgCreatePage() {
               <form onSubmit={(e) => { e.preventDefault(); handleAddLeader(); }}>
                 <div className="row">
                   <div className="form-group">
-                    <label>Title</label>
+                    <label>Religious Title</label>
                     <select
                       value={leaderForm.title}
                       onChange={(e) => setLeaderForm({...leaderForm, title: e.target.value})}
                     >
-                      <option value="">Select Title</option>
+                      <option value="">Select Religious Title</option>
                       <option value="Rev.">Rev.</option>
                       <option value="Pastor">Pastor</option>
+                      <option value="Pst.">Pst.</option>
                       <option value="Elder">Elder</option>
+                      <option value="Bishop">Bishop</option>
+                      <option value="Archbishop">Archbishop</option>
+                      <option value="Canon">Canon</option>
+                      <option value="Venerable">Venerable</option>
+                      <option value="Very Rev.">Very Rev.</option>
+                      <option value="Rt. Rev.">Rt. Rev.</option>
+                      <option value="Most Rev.">Most Rev.</option>
                       <option value="Mr.">Mr.</option>
                       <option value="Mrs.">Mrs.</option>
                       <option value="Miss">Miss</option>
-                      <option value="Dr.">Dr.</option>
                     </select>
                   </div>
+                  <div className="form-group">
+                    <label>Academic/Professional Title</label>
+                    <select
+                      value={leaderForm.academicTitle}
+                      onChange={(e) => setLeaderForm({...leaderForm, academicTitle: e.target.value})}
+                    >
+                      <option value="">Select Academic Title</option>
+                      <option value="Dr.">Dr.</option>
+                      <option value="Prof.">Prof.</option>
+                      <option value="Engr.">Engr.</option>
+                      <option value="Arc.">Arc.</option>
+                      <option value="Barr.">Barr.</option>
+                      <option value="Pharm.">Pharm.</option>
+                      <option value="Capt.">Capt.</option>
+                      <option value="Col.">Col.</option>
+                      <option value="Gen.">Gen.</option>
+                      <option value="Hon.">Hon.</option>
+                      <option value="Sir">Sir</option>
+                      <option value="Dame">Dame</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="row">
                   <div className="form-group">
                     <label>Position *</label>
                     <select
@@ -615,6 +650,7 @@ export default function OrgCreatePage() {
                       setEditingLeader(null)
                       setLeaderForm({
                         title: '',
+                        academicTitle: '',
                         firstName: '',
                         surname: '',
                         otherNames: '',

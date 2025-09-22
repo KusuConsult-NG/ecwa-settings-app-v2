@@ -35,3 +35,5 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: false, message: 'Failed to create expenditure', error: error.message }, { status: 500 })
   }
 }
+
+

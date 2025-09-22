@@ -4,13 +4,14 @@ interface User {
   name: string
   email: string
   password: string
-  role: string
+  role: 'admin' | 'user' | 'leader' | 'treasurer' | 'auditor'
   organization: string
   phone: string
   address: string
   createdAt: string
   isEmailVerified: boolean
   lastLogin?: string
+  status: 'active' | 'inactive' | 'suspended'
 }
 
 interface Organization {
@@ -61,12 +62,13 @@ let users: User[] = [
     name: 'Admin User',
     email: 'admin@churchflow.com',
     password: btoa('admin123'), // Base64 encoded for demo
-    role: 'Admin',
+    role: 'admin',
     organization: 'ChurchFlow',
     phone: '+1234567890',
     address: '123 Admin Street',
     createdAt: new Date().toISOString(),
-    isEmailVerified: true
+    isEmailVerified: true,
+    status: 'active'
   }
 ]
 
@@ -104,11 +106,13 @@ let bankAccounts: BankAccount[] = [
 ]
 
 // User operations
-export function createUser(userData: Omit<User, 'id' | 'createdAt'>): User {
+export function createUser(userData: Omit<User, 'id' | 'createdAt' | 'isEmailVerified' | 'lastLogin' | 'status'>): User {
   const user: User = {
     id: `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
     ...userData,
-    createdAt: new Date().toISOString()
+    createdAt: new Date().toISOString(),
+    isEmailVerified: false,
+    status: 'active'
   }
   users.push(user)
   return user

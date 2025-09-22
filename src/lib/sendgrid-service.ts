@@ -229,3 +229,5 @@ export function isAuthCodeValid(code: string, sentAt: Date): boolean {
   const hoursDiff = (now.getTime() - sentAt.getTime()) / (1000 * 60 * 60)
   return /^\d{6}$/.test(code) && hoursDiff < 24
 }
+
+

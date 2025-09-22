@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react"
+import { useState, useCallback, useTransition } from "react"
 import { useRouter } from "next/navigation"
 
 export const dynamic = 'force-dynamic';
@@ -20,20 +20,21 @@ export default function HomePage() {
   const [success, setSuccess] = useState("")
   const router = useRouter()
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setFormData(prev => ({
       ...prev,
       [name]: value
     }))
-  }
+  }, [])
 
-  const handleSignup = async (e: React.FormEvent) => {
+  const handleSignup = useCallback(async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     setError("")
     setSuccess("")
 
+    // Enhanced validation
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match")
       setIsLoading(false)
@@ -48,6 +49,13 @@ export default function HomePage() {
 
     if (!formData.name || !formData.email || !formData.phone || !formData.address) {
       setError("All fields are required")
+      setIsLoading(false)
+      return
+    }
+
+    // Email validation
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      setError("Please enter a valid email address")
       setIsLoading(false)
       return
     }
@@ -90,9 +98,9 @@ export default function HomePage() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [formData, router])
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = useCallback(async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     setError("")
@@ -141,7 +149,7 @@ export default function HomePage() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [formData, router])
 
   if (showSignup) {
     return (

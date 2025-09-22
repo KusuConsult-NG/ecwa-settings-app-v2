@@ -108,6 +108,22 @@ export default function IncomePage() {
         <p>Track and manage church income sources</p>
       </div>
 
+      {/* Security Notice */}
+      <div className="alert" style={{
+        backgroundColor: "rgba(22, 163, 74, 0.1)",
+        border: "1px solid var(--success)",
+        color: "var(--success)",
+        marginBottom: "1.5rem",
+        display: "flex",
+        alignItems: "center",
+        gap: "0.5rem"
+      }}>
+        <div style={{fontSize: "1.2rem"}}>🔒</div>
+        <div>
+          <strong>Secure Income Recording:</strong> All income entries are verified against actual bank transactions to prevent fraud and ensure accuracy.
+        </div>
+      </div>
+
       {/* Summary Cards */}
       <div className="grid cols-4" style={{marginBottom: "2rem"}}>
         <div className="card" style={{padding: "1.5rem"}}>
