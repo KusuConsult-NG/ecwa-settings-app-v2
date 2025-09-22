@@ -6,19 +6,21 @@ import { User, Lock, CheckCircle, AlertCircle } from 'lucide-react'
 function ProfileSetupPageContent() {
   const params = useSearchParams()
   const router = useRouter()
-  const [token, setToken] = useState('')
   const [email, setEmail] = useState('')
   const [name, setName] = useState('')
+  const [organization, setOrganization] = useState('')
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
   const [msg, setMsg] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
-    const t = params.get('token') || ''
     const e = params.get('email') || ''
-    setToken(t)
+    const n = params.get('name') || ''
+    const o = params.get('org') || ''
     setEmail(e)
+    setName(n)
+    setOrganization(o)
   }, [params])
 
   async function submit() {
@@ -36,22 +38,29 @@ function ProfileSetupPageContent() {
     }
 
     setIsLoading(true)
-    setMsg('Saving profile…')
+    setMsg('Completing invitation and setting up profile…')
     
     try {
-      const r = await fetch('/api/users/profile-setup', {
+      const r = await fetch('/api/complete-invitation', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ token, name, password })
+        body: JSON.stringify({ 
+          email, 
+          name, 
+          password,
+          phone: '', // Optional
+          address: '', // Optional
+          verificationMethod: 'code' // Since they came from code verification
+        })
       })
       const j = await r.json()
       
       if (!r.ok) {
-        setMsg(j.error || 'Failed to save profile')
+        setMsg(j.message || 'Failed to complete invitation')
         return
       }
 
-      setMsg('Profile saved successfully! Redirecting...')
+      setMsg('Profile completed successfully! Redirecting to dashboard...')
       
       // Redirect to dashboard after successful setup
       setTimeout(() => {
@@ -72,6 +81,13 @@ function ProfileSetupPageContent() {
             <User size={48} className="text-primary" style={{marginBottom: "1rem"}} />
             <h2>Set up your profile</h2>
             <p className="muted">Complete your account setup</p>
+            {organization && (
+              <div style={{marginTop: "1rem", padding: "0.75rem", backgroundColor: "#f0f9ff", borderRadius: "8px", border: "1px solid #0ea5e9"}}>
+                <p style={{margin: 0, fontSize: "0.9rem", color: "#0369a1"}}>
+                  <strong>Organization:</strong> {organization}
+                </p>
+              </div>
+            )}
           </div>
 
           <div className="form-group">

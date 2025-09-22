@@ -119,8 +119,8 @@ export async function POST(request: NextRequest) {
           // Create magic link
           const magicLink = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/verify-invite?token=${invite.magicToken}`
           
-          // Create verification link (fallback)
-          const verificationLink = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/verify-invite?code=${invite.authCode}&email=${encodeURIComponent(leader.email)}`
+          // Create verification link (fallback) - redirect to Accept page
+          const verificationLink = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/accept?email=${encodeURIComponent(leader.email)}&code=${invite.authCode}`
           
           await sendInviteEmail({
             to: leader.email,
@@ -158,8 +158,8 @@ export async function POST(request: NextRequest) {
           // Create magic link
           const magicLink = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/verify-invite?token=${invite.magicToken}`
           
-          // Create verification link (fallback)
-          const verificationLink = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/verify-invite?code=${invite.authCode}&email=${encodeURIComponent(member.email)}`
+          // Create verification link (fallback) - redirect to Accept page
+          const verificationLink = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/accept?email=${encodeURIComponent(member.email)}&code=${invite.authCode}`
           
           await sendInviteEmail({
             to: member.email,

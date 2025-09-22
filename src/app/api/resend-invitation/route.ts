@@ -51,8 +51,8 @@ export async function POST(request: NextRequest) {
     // Create magic link
     const magicLink = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/verify-invite?token=${newInvite.magicToken}`
     
-    // Create verification link (fallback)
-    const verificationLink = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/verify-invite?code=${newInvite.authCode}&email=${encodeURIComponent(email)}`
+    // Create verification link (fallback) - redirect to Accept page
+    const verificationLink = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/accept?email=${encodeURIComponent(email)}&code=${newInvite.authCode}`
 
     // Send email
     const emailSent = await sendInviteEmail({

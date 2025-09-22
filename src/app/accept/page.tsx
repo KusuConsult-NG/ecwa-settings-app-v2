@@ -28,7 +28,8 @@ function AcceptPageContent() {
     setMsg('Verifying code…')
     
     try {
-      const r = await fetch('/api/invites/verify', {
+      // Verify the code using the new magic link system
+      const r = await fetch('/api/verify-invite-code', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ email, code })
@@ -36,28 +37,16 @@ function AcceptPageContent() {
       const j = await r.json()
       
       if (!r.ok) {
-        setMsg(j.error || 'Invalid code')
+        setMsg(j.message || 'Invalid code')
         return
       }
       
-      setInviteToken(j.token)
-      setMsg('Code verified. Accepting invite…')
+      setMsg('Code verified successfully! Redirecting to profile setup...')
 
-      // Accept (token-only)
-      const r2 = await fetch('/api/invites/accept', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ token: j.token })
-      })
-      const j2 = await r2.json()
-      
-      if (!r2.ok) {
-        setMsg(j2.error || 'Accept failed')
-        return
-      }
-
-      // Redirect to profile setup with the same short-lived token
-      router.replace(`/onboarding/profile?token=${encodeURIComponent(j.token)}&email=${encodeURIComponent(email)}`)
+      // Redirect to profile setup with invite data
+      setTimeout(() => {
+        router.replace(`/onboarding/profile?email=${encodeURIComponent(email)}&name=${encodeURIComponent(j.invite.name)}&org=${encodeURIComponent(j.invite.organizationName)}`)
+      }, 1500)
     } catch (error) {
       setMsg('Network error. Please try again.')
     } finally {

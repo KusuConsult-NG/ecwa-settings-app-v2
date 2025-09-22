@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
       inviterName: 'Test Admin',
       authCode: '123456',
       magicLink: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/verify-invite?token=test_token_123456`,
-      verificationLink: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/verify-invite?code=123456&email=${encodeURIComponent(email)}`
+      verificationLink: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/accept?email=${encodeURIComponent(email)}&code=123456`
     })
 
     if (testEmail) {
