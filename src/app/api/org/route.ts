@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getOrganizations, createOrganization } from '@/lib/database-simple'
 import { sendInviteEmail } from '@/lib/sendgrid-service'
-import { storeInvitationCode } from '@/app/api/verify-invitation/route'
+import { storeInvitationCode } from '@/lib/invitation-codes'
 
 export const dynamic = 'force-dynamic'
 

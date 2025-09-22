@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createUser, findUserByEmail, hashPassword } from '@/lib/database-simple'
+import { getInvitationCode, deleteInvitationCode } from '@/lib/invitation-codes'
 
 export const dynamic = 'force-dynamic'
-
-// In-memory storage for invitation codes (in production, use Redis or database)
-const invitationCodes = new Map<string, { email: string, name: string, role: string, organizationName: string, createdAt: Date }>()
 
 export async function POST(request: NextRequest) {
   try {
@@ -26,7 +24,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if code exists and is valid
-    const invitation = invitationCodes.get(code)
+    const invitation = getInvitationCode(code)
     if (!invitation) {
       return NextResponse.json({
         success: false,
@@ -46,7 +44,7 @@ export async function POST(request: NextRequest) {
     const now = new Date()
     const hoursDiff = (now.getTime() - invitation.createdAt.getTime()) / (1000 * 60 * 60)
     if (hoursDiff > 24) {
-      invitationCodes.delete(code)
+      deleteInvitationCode(code)
       return NextResponse.json({
         success: false,
         message: 'Verification code has expired. Please request a new one.'
@@ -68,11 +66,13 @@ export async function POST(request: NextRequest) {
       email: invitation.email,
       password: hashPassword('temp_password_' + Math.random().toString(36).substr(2, 9)), // Temporary password
       role: 'user',
-      organization: invitation.organizationName
+      organization: invitation.organizationName,
+      phone: '', // Will be filled during profile completion
+      address: '' // Will be filled during profile completion
     })
 
     // Remove used code
-    invitationCodes.delete(code)
+    deleteInvitationCode(code)
 
     // Return success response
     const response = NextResponse.json({
@@ -105,20 +105,4 @@ export async function POST(request: NextRequest) {
       message: 'Internal server error'
     }, { status: 500 })
   }
-}
-
-// Store invitation code (called from organization creation)
-export function storeInvitationCode(code: string, email: string, name: string, role: string, organizationName: string) {
-  invitationCodes.set(code, {
-    email,
-    name,
-    role,
-    organizationName,
-    createdAt: new Date()
-  })
-}
-
-// Get invitation code storage for testing
-export function getInvitationCodes() {
-  return invitationCodes
 }
