@@ -87,21 +87,7 @@ interface Agency {
 }
 
 // In-memory storage
-let users: User[] = [
-  {
-    id: 'admin_1',
-    name: 'Admin User',
-    email: 'admin@churchflow.com',
-    password: btoa('admin123'), // Base64 encoded for demo
-    role: 'admin',
-    organization: 'ChurchFlow',
-    phone: '+1234567890',
-    address: '123 Admin Street',
-    createdAt: new Date().toISOString(),
-    isEmailVerified: true,
-    status: 'active'
-  }
-]
+let users: User[] = []
 
 let organizations: Organization[] = [
   {

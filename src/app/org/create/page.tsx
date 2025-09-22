@@ -369,12 +369,20 @@ export default function OrgCreatePage() {
     }
 
     const requiredRoles = getAvailableRoles().filter(role => role.required)
+    console.log('Required roles:', requiredRoles)
+    console.log('Current leaders:', leaders)
+    console.log('Leader positions:', leaders.map(l => l.position))
+    
     const hasRequiredLeaders = requiredRoles.every(role => 
       leaders.some(leader => leader.position === role.id)
     )
 
     if (!hasRequiredLeaders) {
-      setMessage(`Please add leaders for all required positions: ${requiredRoles.map(r => r.name).join(', ')}`)
+      const missingRoles = requiredRoles.filter(role => 
+        !leaders.some(leader => leader.position === role.id)
+      )
+      console.log('Missing roles:', missingRoles)
+      setMessage(`Please add leaders for all required positions: ${missingRoles.map(r => r.name).join(', ')}`)
       return
     }
 

@@ -370,13 +370,6 @@ export default function HomePage() {
               </button>
             </p>
           </div>
-          <div style={{marginTop: "2rem", padding: "1rem", backgroundColor: "#f8f9fa", borderRadius: "0.375rem"}}>
-            <h3 style={{margin: "0 0 0.5rem 0", fontSize: "1rem"}}>Demo Credentials:</h3>
-            <p style={{margin: "0 0 0.5rem 0", fontSize: "0.875rem"}}>
-              <strong>Email:</strong> admin@churchflow.com<br/>
-              <strong>Password:</strong> admin123
-            </p>
-          </div>
         </div>
       </section>
     )
