@@ -115,6 +115,8 @@ export default function OrgCreatePage() {
       setLeaders(savedData.leaders || [])
       setMembers(savedData.members || [])
     }
+    
+    console.log('Organization creation page loaded')
   }, [])
 
   useEffect(() => {
@@ -369,14 +371,20 @@ export default function OrgCreatePage() {
     }
 
     // Check if organization type is valid
-    if (!ORGANIZATIONAL_ROLES[orgType as keyof typeof ORGANIZATIONAL_ROLES]) {
-      setMessage("Invalid organization type selected")
+    if (!orgType || !ORGANIZATIONAL_ROLES[orgType as keyof typeof ORGANIZATIONAL_ROLES]) {
+      setMessage("Please select a valid organization type first")
       return
     }
 
     console.log('Organization type:', orgType)
     const availableRoles = getAvailableRoles()
     console.log('Available roles:', availableRoles)
+    
+    // Only validate leaders if we have available roles
+    if (availableRoles.length === 0) {
+      setMessage("No roles available for this organization type")
+      return
+    }
     
     const requiredRoles = availableRoles.filter(role => role.required)
     console.log('Required roles:', requiredRoles)
@@ -666,10 +674,10 @@ export default function OrgCreatePage() {
                 <button 
                   type="submit"
                   className="btn primary" 
-                  disabled={loading || !orgName || !email || (orgInfo.requiresParent && !selectedParent)}
+                  disabled={loading || !orgName || !email || !orgType || (orgInfo.requiresParent && !selectedParent)}
                   style={{ minWidth: '200px' }}
                 >
-                  {loading ? `Creating ${orgType}...` : `Create ${orgType}`}
+                  {loading ? `Creating ${orgType}...` : `Create ${orgType || 'Organization'}`}
                 </button>
               </div>
             </>
