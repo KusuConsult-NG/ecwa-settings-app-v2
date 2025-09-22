@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getOrganizations, createOrganization } from '@/lib/database-simple'
 import { sendInviteEmail } from '@/lib/sendgrid-service'
-import { storeInvitationCode } from '@/lib/invitation-codes'
+import { createInvite } from '@/lib/inviteStore'
+import { sign } from '@/lib/jwt'
 
 export const dynamic = 'force-dynamic'
 
@@ -105,23 +106,29 @@ export async function POST(request: NextRequest) {
     if (members && Array.isArray(members)) {
       for (const member of members) {
         try {
-          const authCode = Math.floor(100000 + Math.random() * 900000).toString()
-          const verificationLink = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/verify-invitation?code=${authCode}&email=${encodeURIComponent(member.email)}`
+          // Create invite in the store
+          const invite = createInvite(
+            member.email,
+            member.name,
+            member.role,
+            newOrg.id, // Use org ID
+            name
+          )
           
-          // Store invitation code
-          storeInvitationCode(authCode, member.email, member.name, member.role, name)
+          // Create verification link
+          const verificationLink = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/accept?email=${encodeURIComponent(member.email)}&inviteId=${invite.id}`
           
           await sendInviteEmail({
             to: member.email,
             name: member.name,
             organizationName: name,
             inviterName: 'Organization Admin',
-            authCode,
+            authCode: invite.code,
             verificationLink
           })
           
           invitationsSent++
-          console.log(`Invitation sent to ${member.email} with code: ${authCode}`)
+          console.log(`Invitation sent to ${member.email} with code: ${invite.code}`)
         } catch (error) {
           console.error(`Failed to send invitation to ${member.email}:`, error)
         }

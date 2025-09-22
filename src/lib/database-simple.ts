@@ -267,3 +267,13 @@ export function deleteExecutive(id: string): boolean {
   }
   return false
 }
+
+// User update function
+export function updateUser(id: string, userData: Partial<Omit<User, 'id' | 'createdAt'>>): User | null {
+  const user = users.find(u => u.id === id)
+  if (user) {
+    Object.assign(user, userData)
+    return user
+  }
+  return null
+}

@@ -77,8 +77,8 @@ export async function sendInviteEmail(data: InviteEmailData): Promise<boolean> {
               <p>This code will expire in 24 hours for security reasons.</p>
               
               ${data.verificationLink ? `
-                <p>Click the button below to verify your invitation:</p>
-                <a href="${data.verificationLink}" class="button">Verify Invitation</a>
+                <p>Click the button below to accept your invitation:</p>
+                <a href="${data.verificationLink}" class="button">Accept Invitation</a>
               ` : ''}
               
               <p>Once you've entered the code, you'll be able to:</p>
