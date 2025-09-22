@@ -167,29 +167,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </main>
         </div>
         
-        <script dangerouslySetInnerHTML={{
-          __html: `
-            // Update user info in topbar
-            fetch('/api/me', {
-              credentials: 'include',
-              cache: 'no-store'
-            }).then(r => r.json()).then(data => {
-              const user = data.user;
-              if (!user) return;
-              
-              // Update topbar with user info
-              const topbar = document.querySelector('.topbar');
-              if (topbar) {
-                const userInfo = topbar.querySelector('.user-info');
-                if (userInfo) {
-                  userInfo.textContent = \`Hello, \${user.name || 'User'}\`;
-                }
-              }
-            }).catch(err => {
-              console.log('Failed to load user info:', err);
-            });
-          `
-        }} />
       </body>
     </html>
   )
