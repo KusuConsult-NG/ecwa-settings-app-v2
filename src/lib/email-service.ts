@@ -1,6 +1,9 @@
 // Real Email Service Integration
 // Supports multiple email providers with fallback
 
+import sgMail from '@sendgrid/mail'
+import nodemailer from 'nodemailer'
+
 export interface EmailProvider {
   name: string;
   sendEmail: (to: string, subject: string, html: string, text: string) => Promise<boolean>;
@@ -18,7 +21,6 @@ class SendGridProvider implements EmailProvider {
         return false;
       }
 
-      const sgMail = require('@sendgrid/mail');
       sgMail.setApiKey(process.env.SENDGRID_API_KEY);
       
       const msg = {
@@ -51,7 +53,7 @@ class SMTPProvider implements EmailProvider {
         return false;
       }
 
-      const nodemailer = require('nodemailer');
+      // nodemailer is already imported at the top
       
       const transporter = nodemailer.createTransporter({
         host: process.env.SMTP_HOST || 'smtp.gmail.com',

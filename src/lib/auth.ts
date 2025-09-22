@@ -2,6 +2,7 @@ import { promises as fs } from 'fs'
 import path from 'path'
 import crypto from 'crypto'
 import bcrypt from 'bcryptjs'
+import { sendVerificationEmail, getEmailTemplate } from './email-verification'
 
 const DATA_DIR = path.join(process.cwd(), '.data')
 const USERS_FILE = path.join(DATA_DIR, 'users.json')
@@ -133,7 +134,7 @@ export function getEmailVerificationExpiry(): string {
 // Send email verification
 export async function sendEmailVerification(user: User): Promise<boolean> {
   try {
-    const { sendVerificationEmail, getEmailTemplate } = await import('./email-verification')
+    // Use static imports (already imported at top of file)
     
     const code = generateEmailVerificationCode()
     const expiresAt = getEmailVerificationExpiry()
