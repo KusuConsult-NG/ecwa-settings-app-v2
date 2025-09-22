@@ -9,7 +9,7 @@ echo "======================================"
 # Check if Vercel CLI is installed
 if ! command -v vercel &> /dev/null; then
     echo "❌ Vercel CLI not found. Installing..."
-    npm install -g vercel
+    bun add -g vercel
     echo "✅ Vercel CLI installed"
 fi
 
@@ -20,16 +20,16 @@ if [ ! -f "package.json" ]; then
 fi
 
 echo "📦 Installing dependencies..."
-npm install
+bun install
 
 echo "🔨 Building the project..."
-npm run build
+bun run build
 
 if [ $? -eq 0 ]; then
     echo "✅ Build successful!"
     echo ""
     echo "🚀 Deploying to Vercel..."
-    vercel --prod
+    bunx vercel --prod --yes
     
     if [ $? -eq 0 ]; then
         echo ""
