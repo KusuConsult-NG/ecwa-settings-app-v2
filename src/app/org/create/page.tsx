@@ -368,7 +368,17 @@ export default function OrgCreatePage() {
       return
     }
 
-    const requiredRoles = getAvailableRoles().filter(role => role.required)
+    // Check if organization type is valid
+    if (!ORGANIZATIONAL_ROLES[orgType as keyof typeof ORGANIZATIONAL_ROLES]) {
+      setMessage("Invalid organization type selected")
+      return
+    }
+
+    console.log('Organization type:', orgType)
+    const availableRoles = getAvailableRoles()
+    console.log('Available roles:', availableRoles)
+    
+    const requiredRoles = availableRoles.filter(role => role.required)
     console.log('Required roles:', requiredRoles)
     console.log('Current leaders:', leaders)
     console.log('Leader positions:', leaders.map(l => l.position))
@@ -594,6 +604,14 @@ export default function OrgCreatePage() {
                   <div style={{textAlign: 'center', padding: '2rem', backgroundColor: 'var(--surface)', borderRadius: '8px'}}>
                     <Users size={48} style={{color: 'var(--muted)', marginBottom: '1rem'}} />
                     <p className="muted">No leaders added yet. Click "Add Leader" to get started.</p>
+                    {orgType && (
+                      <div style={{marginTop: '1rem', padding: '1rem', backgroundColor: '#fef3c7', borderRadius: '8px', border: '1px solid #f59e0b'}}>
+                        <p style={{margin: '0 0 0.5rem 0', fontWeight: 'bold', color: '#92400e'}}>Required Positions for {orgType}:</p>
+                        <p style={{margin: '0', fontSize: '0.875rem', color: '#92400e'}}>
+                          {getAvailableRoles().filter(role => role.required).map(role => role.name).join(', ')}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <div style={{display: 'grid', gap: '1rem'}}>
