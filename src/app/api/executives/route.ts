@@ -33,8 +33,8 @@ export async function POST(request: NextRequest) {
   try {
     const { title1, title2, name, position, department, email, phone, address, startDate, salary, status } = await request.json()
     
-    if (!name || !position || !email || !phone) {
-      return NextResponse.json({ success: false, message: 'Name, position, email, and phone are required' }, { status: 400 })
+    if (!name || !position || !email) {
+      return NextResponse.json({ success: false, message: 'Name, position, and email are required' }, { status: 400 })
     }
 
     const newExecutive = createExecutive({

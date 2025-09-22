@@ -73,6 +73,19 @@ interface Executive {
   createdAt: string
 }
 
+interface Agency {
+  id: string
+  name: string
+  type: string
+  description: string
+  leader: string
+  contact: string
+  location: string
+  established: string
+  status: 'active' | 'inactive'
+  createdAt: string
+}
+
 // In-memory storage
 let users: User[] = [
   {
@@ -112,6 +125,7 @@ let organizations: Organization[] = [
 let expenditures: Expenditure[] = []
 let income: Income[] = []
 let executives: Executive[] = []
+let agencies: Agency[] = []
 let bankAccounts: BankAccount[] = [
   {
     id: 'bank_1',
@@ -276,4 +290,37 @@ export function updateUser(id: string, userData: Partial<Omit<User, 'id' | 'crea
     return user
   }
   return null
+}
+
+// Agency operations
+export function createAgency(agencyData: Omit<Agency, 'id' | 'createdAt'>): Agency {
+  const agency: Agency = {
+    id: `agency_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    ...agencyData,
+    createdAt: new Date().toISOString()
+  }
+  agencies.push(agency)
+  return agency
+}
+
+export function getAllAgencies(): Agency[] {
+  return agencies
+}
+
+export function updateAgency(id: string, agencyData: Partial<Omit<Agency, 'id' | 'createdAt'>>): Agency | null {
+  const agency = agencies.find(ag => ag.id === id)
+  if (agency) {
+    Object.assign(agency, agencyData)
+    return agency
+  }
+  return null
+}
+
+export function deleteAgency(id: string): boolean {
+  const index = agencies.findIndex(ag => ag.id === id)
+  if (index !== -1) {
+    agencies.splice(index, 1)
+    return true
+  }
+  return false
 }

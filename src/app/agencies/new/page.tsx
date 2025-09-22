@@ -58,30 +58,41 @@ export default function NewAgencyPage() {
     }
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      console.log('Agency data:', formData)
-      setSuccess('Agency created successfully!')
-      
-      // Reset form
-      setFormData({
-        name: '',
-        type: '',
-        description: '',
-        leader: '',
-        contact: '',
-        location: '',
-        established: '',
-        status: 'active'
+      const response = await fetch('/api/agencies', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
       })
-      
-      // Redirect after 2 seconds
-      setTimeout(() => {
-        router.push('/agencies')
-      }, 2000)
+
+      const data = await response.json()
+
+      if (data.success) {
+        setSuccess('Agency created successfully!')
+        
+        // Reset form
+        setFormData({
+          name: '',
+          type: '',
+          description: '',
+          leader: '',
+          contact: '',
+          location: '',
+          established: '',
+          status: 'active'
+        })
+        
+        // Redirect after 2 seconds
+        setTimeout(() => {
+          router.push('/agencies')
+        }, 2000)
+      } else {
+        setError(data.message || 'Failed to create agency. Please try again.')
+      }
       
     } catch (error) {
+      console.error('Error creating agency:', error)
       setError('Failed to create agency. Please try again.')
     } finally {
       setIsLoading(false)
