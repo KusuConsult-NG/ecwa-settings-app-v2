@@ -1,6 +1,7 @@
 "use client"
 import { useEffect, useState } from "react"
 import { Building, Users, Plus, ArrowRight, Mail, Phone, MapPin, User } from "lucide-react"
+import { DataPersistence } from '@/lib/data-persistence'
 
 // Force dynamic rendering for this page
 export const dynamic = 'force-dynamic';
@@ -101,6 +102,19 @@ export default function OrgCreatePage() {
 
   useEffect(() => {
     setMounted(true)
+    
+    // Load saved form data from localStorage
+    const savedData = DataPersistence.load('org_form_data', null) as any
+    if (savedData) {
+      setOrgType(savedData.orgType || '')
+      setOrgName(savedData.orgName || '')
+      setEmail(savedData.email || '')
+      setPhone(savedData.phone || '')
+      setAddress(savedData.address || '')
+      setSelectedParent(savedData.selectedParent || '')
+      setLeaders(savedData.leaders || [])
+      setMembers(savedData.members || [])
+    }
   }, [])
 
   useEffect(() => {
@@ -192,13 +206,16 @@ export default function OrgCreatePage() {
       isRequired: getAvailableRoles().find(role => role.id === leaderForm.position)?.required || false
     }
 
+    let updatedLeaders: Leader[]
     if (editingLeader) {
-      setLeaders(prev => prev.map(leader => 
+      updatedLeaders = leaders.map(leader => 
         leader.id === editingLeader.id ? newLeader : leader
-      ))
+      )
     } else {
-      setLeaders(prev => [...prev, newLeader])
+      updatedLeaders = [...leaders, newLeader]
     }
+    
+    setLeaders(updatedLeaders)
 
     setLeaderForm({
       title: '',
@@ -212,6 +229,21 @@ export default function OrgCreatePage() {
     })
     setShowLeaderForm(false)
     setEditingLeader(null)
+    
+    // Save form data after adding/editing leader
+    setTimeout(() => {
+      const formData = {
+        orgType,
+        orgName,
+        email,
+        phone,
+        address,
+        selectedParent,
+        leaders: updatedLeaders,
+        members
+      }
+      DataPersistence.save('org_form_data', formData)
+    }, 100)
   }
 
   const handleEditLeader = (leader: Leader) => {
@@ -230,24 +262,98 @@ export default function OrgCreatePage() {
   }
 
   const handleDeleteLeader = (id: string) => {
-    setLeaders(prev => prev.filter(leader => leader.id !== id))
+    const updatedLeaders = leaders.filter(leader => leader.id !== id)
+    setLeaders(updatedLeaders)
+    
+    // Save form data after deleting leader
+    setTimeout(() => {
+      const formData = {
+        orgType,
+        orgName,
+        email,
+        phone,
+        address,
+        selectedParent,
+        leaders: updatedLeaders,
+        members
+      }
+      DataPersistence.save('org_form_data', formData)
+    }, 100)
   }
 
   const addMember = () => {
     if (memberForm.name && memberForm.email && memberForm.role) {
-      setMembers([...members, { ...memberForm }])
+      const updatedMembers = [...members, { ...memberForm }]
+      setMembers(updatedMembers)
       setMemberForm({ name: '', email: '', role: '' })
       setShowMemberForm(false)
+      
+      // Save form data after adding member
+      setTimeout(() => {
+        const formData = {
+          orgType,
+          orgName,
+          email,
+          phone,
+          address,
+          selectedParent,
+          leaders,
+          members: updatedMembers
+        }
+        DataPersistence.save('org_form_data', formData)
+      }, 100)
     }
   }
 
   const removeMember = (index: number) => {
-    setMembers(members.filter((_, i) => i !== index))
+    const updatedMembers = members.filter((_, i) => i !== index)
+    setMembers(updatedMembers)
+    
+    // Save form data after removing member
+    setTimeout(() => {
+      const formData = {
+        orgType,
+        orgName,
+        email,
+        phone,
+        address,
+        selectedParent,
+        leaders,
+        members: updatedMembers
+      }
+      DataPersistence.save('org_form_data', formData)
+    }, 100)
   }
 
   const resetMemberForm = () => {
     setMemberForm({ name: '', email: '', role: '' })
     setShowMemberForm(false)
+  }
+
+  const saveFormData = () => {
+    const formData = {
+      orgType,
+      orgName,
+      email,
+      phone,
+      address,
+      selectedParent,
+      leaders,
+      members
+    }
+    DataPersistence.save('org_form_data', formData)
+  }
+
+  const clearFormData = () => {
+    DataPersistence.remove('org_form_data')
+    setOrgType('')
+    setOrgName('')
+    setEmail('')
+    setPhone('')
+    setAddress('')
+    setSelectedParent('')
+    setLeaders([])
+    setMembers([])
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -291,16 +397,10 @@ export default function OrgCreatePage() {
 
       if (response.ok) {
         const data = await response.json()
-        setMessage(data.message || `${orgType} created successfully! Verification codes sent to all leaders.`)
+        setMessage(data.message || `${orgType} created successfully! ${data.membersInvited || 0} invitation(s) sent to members.`)
         
-        // Reset form
-        setOrgName("")
-        setEmail("")
-        setPhone("")
-        setAddress("")
-        setSelectedParent("")
-        setLeaders([])
-        setOrgType("")
+        // Clear saved form data and reset form
+        clearFormData()
       } else {
         const error = await response.json()
         setMessage(`Error: ${error.message || error.error || 'Failed to create organization'}`)
@@ -354,6 +454,7 @@ export default function OrgCreatePage() {
                     setOrgType(e.target.value)
                     setSelectedParent("")
                     setLeaders([])
+                    setTimeout(saveFormData, 100)
                   }}
                   required
                   disabled={loading}
@@ -382,7 +483,10 @@ export default function OrgCreatePage() {
                     <label>Organization Name *</label>
                     <input 
                       value={orgName} 
-                      onChange={e => setOrgName(e.target.value)} 
+                      onChange={e => {
+                        setOrgName(e.target.value)
+                        setTimeout(saveFormData, 100)
+                      }} 
                       placeholder={orgInfo.placeholder}
                       required
                       disabled={loading}
@@ -393,7 +497,10 @@ export default function OrgCreatePage() {
                     <input 
                       type="email"
                       value={email} 
-                      onChange={e => setEmail(e.target.value)} 
+                      onChange={e => {
+                        setEmail(e.target.value)
+                        setTimeout(saveFormData, 100)
+                      }} 
                       placeholder={`admin@ecwa-${orgType.toLowerCase()}-name.org`}
                       required
                       disabled={loading}
@@ -406,7 +513,10 @@ export default function OrgCreatePage() {
                     <label>Phone Number</label>
                     <input 
                       value={phone} 
-                      onChange={e => setPhone(e.target.value)} 
+                      onChange={e => {
+                        setPhone(e.target.value)
+                        setTimeout(saveFormData, 100)
+                      }} 
                       placeholder="+234 803 123 4567"
                       disabled={loading}
                     />
@@ -415,7 +525,10 @@ export default function OrgCreatePage() {
                     <label>Address</label>
                     <input 
                       value={address} 
-                      onChange={e => setAddress(e.target.value)} 
+                      onChange={e => {
+                        setAddress(e.target.value)
+                        setTimeout(saveFormData, 100)
+                      }} 
                       placeholder="123 Church Street, City, State"
                       disabled={loading}
                     />
@@ -434,7 +547,10 @@ export default function OrgCreatePage() {
                       <label>{orgInfo.parentLabel} *</label>
                       <select 
                         value={selectedParent} 
-                        onChange={e => setSelectedParent(e.target.value)}
+                        onChange={e => {
+                          setSelectedParent(e.target.value)
+                          setTimeout(saveFormData, 100)
+                        }}
                         required
                         disabled={loading}
                       >
@@ -512,7 +628,15 @@ export default function OrgCreatePage() {
               </div>
 
               {/* Submit Button */}
-              <div className="form-actions">
+              <div className="form-actions" style={{display: 'flex', gap: '1rem', alignItems: 'center'}}>
+                <button 
+                  type="button"
+                  onClick={saveFormData}
+                  className="btn secondary"
+                  disabled={loading}
+                >
+                  💾 Save Draft
+                </button>
                 <button 
                   type="submit"
                   className="btn primary" 
