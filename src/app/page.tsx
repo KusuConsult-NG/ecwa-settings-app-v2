@@ -370,6 +370,18 @@ export default function HomePage() {
               </button>
             </p>
           </div>
+          
+          {/* Temporary admin credentials for initial setup */}
+          <div style={{marginTop: "2rem", padding: "1rem", backgroundColor: "#f0f9ff", borderRadius: "0.375rem", border: "1px solid #0ea5e9"}}>
+            <h3 style={{margin: "0 0 0.5rem 0", fontSize: "1rem", color: "#0369a1"}}>System Administrator Access:</h3>
+            <p style={{margin: "0 0 0.5rem 0", fontSize: "0.875rem", color: "#0369a1"}}>
+              <strong>Email:</strong> admin@ecwa.org<br/>
+              <strong>Password:</strong> EcwaAdmin2024!
+            </p>
+            <p style={{margin: "0", fontSize: "0.75rem", color: "#0369a1", fontStyle: "italic"}}>
+              Use these credentials to access the system for the first time. Change the password after login.
+            </p>
+          </div>
         </div>
       </section>
     )

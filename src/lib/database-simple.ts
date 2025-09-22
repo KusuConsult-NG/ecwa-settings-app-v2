@@ -87,7 +87,21 @@ interface Agency {
 }
 
 // In-memory storage
-let users: User[] = []
+let users: User[] = [
+  {
+    id: 'admin_1',
+    name: 'System Administrator',
+    email: 'admin@ecwa.org',
+    password: hashPassword('EcwaAdmin2024!'), // Properly hashed password
+    role: 'admin',
+    organization: 'ECWA General Church Council',
+    phone: '+234 800 000 0000',
+    address: 'ECWA Headquarters, Jos, Nigeria',
+    createdAt: new Date().toISOString(),
+    isEmailVerified: true,
+    status: 'active'
+  }
+]
 
 let organizations: Organization[] = [
   {
