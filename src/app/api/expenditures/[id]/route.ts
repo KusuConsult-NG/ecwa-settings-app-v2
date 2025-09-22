@@ -5,10 +5,11 @@ export const dynamic = 'force-dynamic'
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { status, approvedBy } = await request.json()
+    const { id } = await params
     
     if (!status || !['pending', 'approved', 'rejected'].includes(status)) {
       return NextResponse.json({ 
@@ -18,7 +19,7 @@ export async function PATCH(
     }
 
     const updatedExpenditure = updateExpenditureStatus(
-      params.id, 
+      id, 
       status, 
       approvedBy || 'Current User'
     )

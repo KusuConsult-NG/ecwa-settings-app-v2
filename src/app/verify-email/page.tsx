@@ -1,9 +1,9 @@
 "use client"
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Mail, CheckCircle, AlertCircle, ArrowLeft } from "lucide-react"
 
-export default function VerifyEmailPage() {
+function VerifyEmailContent() {
   const [isVerifying, setIsVerifying] = useState(false)
   const [isVerified, setIsVerified] = useState(false)
   const [error, setError] = useState("")
@@ -199,5 +199,19 @@ export default function VerifyEmailPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function VerifyEmailPage() {
+  return (
+    <Suspense fallback={
+      <div className="container" style={{maxWidth: "500px", margin: "2rem auto"}}>
+        <div className="card" style={{textAlign: "center", padding: "3rem 2rem"}}>
+          <div className="loading">Loading...</div>
+        </div>
+      </div>
+    }>
+      <VerifyEmailContent />
+    </Suspense>
   )
 }
