@@ -52,7 +52,7 @@ DATABASE_URL=postgresql://username:password@ep-xxx-xxx-pooler.us-east-1.aws.neon
 #### **SendGrid Configuration**
 ```
 SENDGRID_API_KEY=your_sendgrid_api_key_here
-SENDGRID_FROM_EMAIL=your-verified-email@yourdomain.com
+SENDGRID_FROM_EMAIL=churchflow44@gmail.com
 ```
 
 #### **App Configuration**

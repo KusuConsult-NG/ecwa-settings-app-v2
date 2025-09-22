@@ -25,7 +25,7 @@ class SendGridProvider implements EmailProvider {
       
       const msg = {
         to,
-        from: process.env.FROM_EMAIL || 'noreply@churchflow.com',
+        from: process.env.FROM_EMAIL || 'churchflow44@gmail.com',
         subject,
         text,
         html,
@@ -66,7 +66,7 @@ class SMTPProvider implements EmailProvider {
       });
       
       const info = await transporter.sendMail({
-        from: process.env.FROM_EMAIL || 'noreply@churchflow.com',
+        from: process.env.FROM_EMAIL || 'churchflow44@gmail.com',
         to,
         subject,
         text,

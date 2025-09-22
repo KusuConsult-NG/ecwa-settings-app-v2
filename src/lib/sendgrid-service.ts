@@ -54,7 +54,7 @@ export async function sendInviteEmail(data: InviteEmailData): Promise<boolean> {
     const msg = {
       to: data.to,
       from: {
-        email: process.env.SENDGRID_FROM_EMAIL || 'noreply@churchflow.com',
+        email: process.env.SENDGRID_FROM_EMAIL || 'churchflow44@gmail.com',
         name: 'ChurchFlow Team'
       },
       subject: `You're invited to join ${data.organizationName} on ChurchFlow`,
@@ -165,7 +165,7 @@ export async function sendWelcomeEmail(data: WelcomeEmailData): Promise<boolean>
     const msg = {
       to: data.to,
       from: {
-        email: process.env.SENDGRID_FROM_EMAIL || 'noreply@churchflow.com',
+        email: process.env.SENDGRID_FROM_EMAIL || 'churchflow44@gmail.com',
         name: 'ChurchFlow Team'
       },
       subject: `Welcome to ${data.organizationName} on ChurchFlow!`,
