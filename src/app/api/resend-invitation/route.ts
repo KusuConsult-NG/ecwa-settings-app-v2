@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         success: true,
         message: 'New verification code sent to your email',
-        authCode // For development/testing purposes
+        authCode: newInvite.authCode // For development/testing purposes
       })
     } else {
       return NextResponse.json({

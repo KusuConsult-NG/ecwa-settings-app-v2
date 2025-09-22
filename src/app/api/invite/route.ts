@@ -25,13 +25,19 @@ export async function POST(request: NextRequest) {
     // Store the code temporarily
     authCodes.set(email, { code: authCode, sentAt, email, name })
 
+    // Create verification links
+    const magicLink = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/verify-invite?token=test_token_${authCode}`
+    const verificationLink = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/accept?email=${encodeURIComponent(email)}&code=${authCode}`
+
     // Send invite email
     const emailSent = await sendInviteEmail({
       to: email,
       name,
       authCode,
       organizationName,
-      inviterName
+      inviterName,
+      magicLink,
+      verificationLink
     })
 
     if (!emailSent) {
