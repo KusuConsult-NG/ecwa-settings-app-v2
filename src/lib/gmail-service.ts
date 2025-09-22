@@ -29,8 +29,16 @@ export interface WelcomeEmailData {
 
 export async function sendInviteEmail(data: InviteEmailData): Promise<boolean> {
   try {
+    // Check if Gmail is configured
+    const gmailUser = process.env.GMAIL_USER
+    const gmailPassword = process.env.GMAIL_APP_PASSWORD
+    
+    console.log('📧 Gmail Configuration Check:')
+    console.log('GMAIL_USER:', gmailUser ? 'Set' : 'Not set')
+    console.log('GMAIL_APP_PASSWORD:', gmailPassword ? 'Set' : 'Not set')
+    
     // If no Gmail credentials, log to console for development
-    if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) {
+    if (!gmailUser || !gmailPassword) {
       console.log('📧 INVITE EMAIL (Development Mode - Gmail not configured):')
       console.log('To:', data.to)
       console.log('Subject: You\'re invited to join ChurchFlow')
@@ -38,7 +46,9 @@ export async function sendInviteEmail(data: InviteEmailData): Promise<boolean> {
       console.log('Organization:', data.organizationName)
       console.log('Inviter:', data.inviterName)
       console.log('Verification Link:', data.verificationLink)
-      console.log('⚠️  To send real emails, configure Gmail credentials in environment variables')
+      console.log('⚠️  To send real emails, configure Gmail credentials:')
+      console.log('   GMAIL_USER=your-email@gmail.com')
+      console.log('   GMAIL_APP_PASSWORD=your_16_character_app_password')
       return true
     }
 
