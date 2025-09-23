@@ -160,7 +160,8 @@ export default function StaffPage() {
         manager: '',
         location: '',
         emergencyContact: '',
-        emergencyPhone: ''
+        emergencyPhone: '',
+        agency: ''
       })
     } catch (error) {
       setMessage("Failed to save staff member")
@@ -183,7 +184,8 @@ export default function StaffPage() {
       manager: staffMember.manager || '',
       location: staffMember.location,
       emergencyContact: staffMember.emergencyContact,
-      emergencyPhone: staffMember.emergencyPhone
+      emergencyPhone: staffMember.emergencyPhone,
+      agency: staffMember.agency || ''
     })
     setShowForm(true)
   }
@@ -260,7 +262,8 @@ export default function StaffPage() {
                 manager: '',
                 location: '',
                 emergencyContact: '',
-                emergencyPhone: ''
+                emergencyPhone: '',
+                agency: ''
               })
             }}
             className="btn primary"

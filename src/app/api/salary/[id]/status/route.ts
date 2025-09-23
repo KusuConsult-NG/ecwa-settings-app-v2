@@ -1,17 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { verifyJwt } from '@/lib/jwt'
+import { verify } from '@/lib/jwt'
 
 // Mock data storage (replace with database)
 let salaryRecords: any[] = []
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const token = req.cookies.get('auth')?.value
     if (!token) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const payload = await verifyJwt(token)
+    const payload = await verify(token)
     if (!payload) {
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
     }
@@ -27,7 +27,8 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
       }, { status: 400 })
     }
 
-    const recordIndex = salaryRecords.findIndex(record => record.id === params.id)
+    const { id } = await params
+    const recordIndex = salaryRecords.findIndex(record => record.id === id)
     if (recordIndex === -1) {
       return NextResponse.json({ error: 'Salary record not found' }, { status: 404 })
     }
