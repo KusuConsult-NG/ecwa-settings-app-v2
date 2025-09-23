@@ -41,6 +41,8 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  let generatedMagicLinks: string[] = []
+  
   try {
     const body = await request.json()
     const { name, type, parentId, parentName, email, phone, address, leaders, members } = body
@@ -119,6 +121,7 @@ export async function POST(request: NextRequest) {
           
           // Create magic link with proper URL
           const magicLink = generateMagicLink(invite.magicToken)
+          generatedMagicLinks.push(magicLink)
           
           // Create verification link (fallback) - redirect to Accept page
           const verificationLink = generateVerificationLink(leader.email, invite.authCode)
@@ -158,6 +161,7 @@ export async function POST(request: NextRequest) {
           
           // Create magic link with proper URL
           const magicLink = generateMagicLink(invite.magicToken)
+          generatedMagicLinks.push(magicLink)
           
           // Create verification link (fallback) - redirect to Accept page
           const verificationLink = generateVerificationLink(member.email, invite.authCode)
@@ -195,7 +199,8 @@ export async function POST(request: NextRequest) {
       membersCount: members?.length || 0,
       leaderInvitationsSent,
       memberInvitationsSent,
-      totalInvitations
+      totalInvitations,
+      magicLinks: generatedMagicLinks
     })
   } catch (error) {
     console.error('Organization creation error:', error)
