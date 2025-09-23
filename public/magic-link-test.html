@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magic Link Verification - Working</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 2rem;
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+        }
+        .success {
+            background-color: #dcfce7;
+            color: #166534;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+            border: 1px solid #bbf7d0;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        .btn {
+            background-color: #4f46e5;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 1rem;
+        }
+        .btn:hover {
+            background-color: #4338ca;
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4f46e5;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .hidden {
+            display: none;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .muted {
+            color: #64748b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="text-center" id="verification-section">
+                <h2>Verifying Magic Link</h2>
+                <p class="muted">Please wait while we verify your invitation...</p>
+                <div class="spinner" id="spinner"></div>
+            </div>
+
+            <div class="hidden" id="success-section">
+                <div class="success">
+                    ✅ Magic link verified successfully!
+                </div>
+                <h2>Complete Your Profile</h2>
+                <p class="muted">Set your password and update your details to get started.</p>
+                
+                <form id="profile-form">
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" value="Test User" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" placeholder="Your phone number" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="address">Address</label>
+                        <input type="text" id="address" placeholder="Your address" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">New Password</label>
+                        <input type="password" id="password" placeholder="Set your password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm New Password</label>
+                        <input type="password" id="confirmPassword" placeholder="Confirm your new password" required>
+                    </div>
+                    <button type="submit" class="btn">Complete Profile</button>
+                </form>
+            </div>
+
+            <div class="hidden" id="completed-section">
+                <div class="success">
+                    ✅ Profile completed successfully! Redirecting to dashboard...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get token from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+        
+        // Simulate magic link verification
+        setTimeout(() => {
+            document.getElementById('verification-section').classList.add('hidden');
+            document.getElementById('success-section').classList.remove('hidden');
+        }, 2000);
+
+        // Handle profile form submission
+        document.getElementById('profile-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (password !== confirmPassword) {
+                alert('Passwords do not match.');
+                return;
+            }
+            
+            if (password.length < 6) {
+                alert('Password must be at least 6 characters long.');
+                return;
+            }
+            
+            // Show completion message
+            document.getElementById('success-section').classList.add('hidden');
+            document.getElementById('completed-section').classList.remove('hidden');
+            
+            // Redirect to dashboard after 2 seconds
+            setTimeout(() => {
+                window.location.href = '/dashboard';
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
