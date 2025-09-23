@@ -112,6 +112,29 @@ export default function OrgPage() {
         </div>
       </div>
 
+      {/* Create Organization Buttons */}
+      <div className="card" style={{marginBottom: '2rem'}}>
+        <h3 style={{marginBottom: '1rem'}}>Create New Organization</h3>
+        <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem'}}>
+          <a href="/org/gcc" className="btn primary" style={{display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem'}}>
+            <Building size={20} style={{marginRight: '0.5rem'}} />
+            Create GCC
+          </a>
+          <a href="/org/dcc" className="btn secondary" style={{display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem'}}>
+            <Building size={20} style={{marginRight: '0.5rem'}} />
+            Create DCC
+          </a>
+          <a href="/org/lcc" className="btn secondary" style={{display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem'}}>
+            <Building size={20} style={{marginRight: '0.5rem'}} />
+            Create LCC
+          </a>
+          <a href="/org/create" className="btn secondary" style={{display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem'}}>
+            <Building size={20} style={{marginRight: '0.5rem'}} />
+            Create LC
+          </a>
+        </div>
+      </div>
+
       {/* Organizations List */}
       <div className="card">
         <h3 style={{marginBottom: '1rem'}}>
