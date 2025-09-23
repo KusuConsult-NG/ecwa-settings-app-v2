@@ -24,12 +24,9 @@ function VerifyInviteContent() {
     const urlEmail = searchParams.get('email')
     const urlToken = searchParams.get('token')
     
-    console.log('Page loaded with params:', { urlCode, urlEmail, urlToken })
-    
     if (urlToken) {
       // Magic link verification
       setVerificationMethod('magic')
-      console.log('Starting magic link verification for token:', urlToken)
       handleMagicLinkVerification(urlToken)
     } else if (urlCode && urlEmail) {
       // Code verification
@@ -43,18 +40,27 @@ function VerifyInviteContent() {
     setIsLoading(true)
     setMessage(null)
 
-    // IMMEDIATE FIX: Accept any token for immediate functionality
-    // This bypasses all API issues and provides immediate user experience
-    console.log('Magic link verification started for token:', token)
-    
-    setTimeout(() => {
-      console.log('Magic link verification completed successfully')
-      setMessage({ type: 'success', text: 'Magic link verified successfully! You can now complete your profile.' })
-      setName('Test User')
-      setEmail('test@example.com')
-      setStep('profile')
+    try {
+      const res = await fetch('/api/verify-magic-link', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token }),
+      })
+      const data = await res.json()
+
+      if (data.success) {
+        setMessage({ type: 'success', text: data.message })
+        setName(data.invite.name)
+        setEmail(data.invite.email)
+        setStep('profile')
+      } else {
+        setMessage({ type: 'error', text: data.message || 'Magic link verification failed.' })
+      }
+    } catch (error: any) {
+      setMessage({ type: 'error', text: `Network error: ${error.message}` })
+    } finally {
       setIsLoading(false)
-    }, 1500)
+    }
   }
 
   const handleVerifyCode = async (e: React.FormEvent) => {
