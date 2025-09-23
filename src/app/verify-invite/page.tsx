@@ -41,7 +41,7 @@ function VerifyInviteContent() {
     setMessage(null)
 
     try {
-      const res = await fetch('/api/verify-magic-link', {
+      const res = await fetch('/api/verify-magic-link-new', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token }),
