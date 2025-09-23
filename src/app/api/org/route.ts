@@ -3,6 +3,7 @@ import { getOrganizations, createOrganization } from '@/lib/database-simple'
 import { sendInviteEmail } from '@/lib/sendgrid-service'
 import { createMagicInvite } from '@/lib/magic-link-store'
 import { sign } from '@/lib/jwt'
+import { generateMagicLink, generateVerificationLink } from '@/lib/url-utils'
 
 export const dynamic = 'force-dynamic'
 
@@ -116,11 +117,11 @@ export async function POST(request: NextRequest) {
             'Organization Admin'
           )
           
-          // Create magic link
-          const magicLink = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/verify-invite?token=${invite.magicToken}`
+          // Create magic link with proper URL
+          const magicLink = generateMagicLink(invite.magicToken)
           
           // Create verification link (fallback) - redirect to Accept page
-          const verificationLink = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/accept?email=${encodeURIComponent(leader.email)}&code=${invite.authCode}`
+          const verificationLink = generateVerificationLink(leader.email, invite.authCode)
           
           await sendInviteEmail({
             to: leader.email,
@@ -155,11 +156,11 @@ export async function POST(request: NextRequest) {
             'Organization Admin'
           )
           
-          // Create magic link
-          const magicLink = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/verify-invite?token=${invite.magicToken}`
+          // Create magic link with proper URL
+          const magicLink = generateMagicLink(invite.magicToken)
           
           // Create verification link (fallback) - redirect to Accept page
-          const verificationLink = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/accept?email=${encodeURIComponent(member.email)}&code=${invite.authCode}`
+          const verificationLink = generateVerificationLink(member.email, invite.authCode)
           
           await sendInviteEmail({
             to: member.email,
