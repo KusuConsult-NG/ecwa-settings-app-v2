@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Find existing invitation for this email
-    const existingInvites = getAllMagicInvites()
+    const existingInvites = await getAllMagicInvites()
     const existingInvite = existingInvites.find(inv => 
       inv.email.toLowerCase() === email.toLowerCase() && 
       !inv.consumed && 
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create new magic invite with updated details
-    const newInvite = createMagicInvite(
+    const newInvite = await createMagicInvite(
       email,
       existingInvite.name,
       existingInvite.role,

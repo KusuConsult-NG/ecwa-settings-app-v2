@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if magic link exists and is valid
-    const invite = getMagicInviteByToken(token)
+    const invite = await getMagicInviteByToken(token)
     if (!invite) {
       return NextResponse.json({
         success: false,

@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if code exists and is valid
-    const invite = getMagicInviteByCode(code, email)
+    const invite = await getMagicInviteByCode(code, email)
     if (!invite) {
       return NextResponse.json({
         success: false,

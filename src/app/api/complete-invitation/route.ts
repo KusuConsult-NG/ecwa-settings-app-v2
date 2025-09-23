@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
     console.log('Complete invitation for normalized email:', normalizedEmail)
     
     // Find the invite by normalized email
-    const allInvites = getAllMagicInvites()
+    const allInvites = await getAllMagicInvites()
     const invite = allInvites.find((inv: MagicInvite) => 
       inv.email.toLowerCase() === normalizedEmail && 
       !inv.consumed && 
@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
     })
 
     // Consume the invite
-    consumeMagicInvite(invite.id)
+    await consumeMagicInvite(invite.id)
 
     // Generate JWT token for session
     const token = sign({

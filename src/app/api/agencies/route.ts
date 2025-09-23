@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
     if (email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       try {
         // Create magic invite
-        const invite = createMagicInvite(
+        const invite = await createMagicInvite(
           email,
           leader,
           'Agency Leader',

@@ -108,7 +108,7 @@ export async function POST(request: NextRequest) {
       for (const leader of leaders) {
         try {
           // Create magic invite for leaders
-          const invite = createMagicInvite(
+          const invite = await createMagicInvite(
             leader.email,
             `${leader.firstName} ${leader.surname}`,
             'leader',
@@ -147,7 +147,7 @@ export async function POST(request: NextRequest) {
       for (const member of members) {
         try {
           // Create magic invite
-          const invite = createMagicInvite(
+          const invite = await createMagicInvite(
             member.email,
             member.name,
             member.role,

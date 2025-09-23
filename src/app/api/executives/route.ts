@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
     // Send magic link invitation to the executive
     try {
       // Create magic invite
-      const invite = createMagicInvite(
+      const invite = await createMagicInvite(
         email,
         name,
         position,
