@@ -15,7 +15,6 @@ interface SalaryRecord {
   status: 'pending' | 'approved' | 'paid' | 'cancelled'
   createdAt: string
   updatedAt: string
-  agency?: string
 }
 
 // Mock data storage (replace with database)
@@ -33,8 +32,7 @@ let salaryRecords: SalaryRecord[] = [
     payPeriod: '2024-01',
     status: 'paid',
     createdAt: '2024-01-01T00:00:00Z',
-    updatedAt: '2024-01-01T00:00:00Z',
-    agency: 'ECWA Jos Central'
+    updatedAt: '2024-01-01T00:00:00Z'
   },
   {
     id: '2',
@@ -94,8 +92,7 @@ export async function POST(req: NextRequest) {
       allowances,
       deductions,
       netSalary,
-      payPeriod,
-      agency
+      payPeriod
     } = body
 
     // Validate required fields
@@ -129,8 +126,7 @@ export async function POST(req: NextRequest) {
       payPeriod,
       status: 'pending',
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      agency: agency || undefined
+      updatedAt: new Date().toISOString()
     }
 
     salaryRecords.push(newRecord)

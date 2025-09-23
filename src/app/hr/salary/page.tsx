@@ -16,7 +16,6 @@ interface SalaryRecord {
   status: 'pending' | 'approved' | 'paid' | 'cancelled'
   createdAt: string
   updatedAt: string
-  agency?: string
 }
 
 const SALARY_STATUSES = ['pending', 'approved', 'paid', 'cancelled']
@@ -30,7 +29,6 @@ export default function SalaryPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
   const [departmentFilter, setDepartmentFilter] = useState('')
-  const [agencies, setAgencies] = useState<{id: string, name: string}[]>([])
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
@@ -42,13 +40,11 @@ export default function SalaryPage() {
     basicSalary: 0,
     allowances: 0,
     deductions: 0,
-    payPeriod: '',
-    agency: ''
+    payPeriod: ''
   })
 
   useEffect(() => {
     loadSalaries()
-    loadAgencies()
   }, [])
 
   const loadSalaries = async () => {
@@ -67,17 +63,6 @@ export default function SalaryPage() {
     }
   }
 
-  const loadAgencies = async () => {
-    try {
-      const response = await fetch('/api/agencies')
-      if (response.ok) {
-        const data = await response.json()
-        setAgencies(data.agencies || [])
-      }
-    } catch (err) {
-      console.error('Failed to load agencies:', err)
-    }
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -124,8 +109,7 @@ export default function SalaryPage() {
       basicSalary: 0,
       allowances: 0,
       deductions: 0,
-      payPeriod: '',
-      agency: ''
+      payPeriod: ''
     })
     setEditingId(null)
     setShowForm(false)
@@ -140,8 +124,7 @@ export default function SalaryPage() {
       basicSalary: salary.basicSalary,
       allowances: salary.allowances,
       deductions: salary.deductions,
-      payPeriod: salary.payPeriod,
-      agency: salary.agency || ''
+      payPeriod: salary.payPeriod
     })
     setEditingId(salary.id)
     setShowForm(true)
@@ -495,18 +478,6 @@ export default function SalaryPage() {
                 </div>
               </div>
 
-              <div className="form-group">
-                <label>Agency (Optional)</label>
-                <select
-                  value={formData.agency}
-                  onChange={(e) => setFormData({...formData, agency: e.target.value})}
-                >
-                  <option value="">Select Agency</option>
-                  {agencies.map(agency => (
-                    <option key={agency.id} value={agency.name}>{agency.name}</option>
-                  ))}
-                </select>
-              </div>
 
               <div className="btn-group" style={{justifyContent: 'flex-end'}}>
                 <button

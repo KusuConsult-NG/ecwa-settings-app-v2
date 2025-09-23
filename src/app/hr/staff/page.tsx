@@ -19,7 +19,6 @@ type Staff = {
   location: string
   emergencyContact: string
   emergencyPhone: string
-  agency?: string
 }
 
 export default function StaffPage() {
@@ -27,7 +26,6 @@ export default function StaffPage() {
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [editingStaff, setEditingStaff] = useState<Staff | null>(null)
-  const [agencies, setAgencies] = useState<{id: string, name: string}[]>([])
   const [filters, setFilters] = useState({
     status: '',
     department: '',
@@ -45,27 +43,13 @@ export default function StaffPage() {
     manager: '',
     location: '',
     emergencyContact: '',
-    emergencyPhone: '',
-    agency: ''
+    emergencyPhone: ''
   })
   const [message, setMessage] = useState("")
 
   useEffect(() => {
     loadStaff()
-    loadAgencies()
   }, [])
-
-  const loadAgencies = async () => {
-    try {
-      const response = await fetch('/api/agencies')
-      if (response.ok) {
-        const data = await response.json()
-        setAgencies(data.agencies || [])
-      }
-    } catch (err) {
-      console.error('Failed to load agencies:', err)
-    }
-  }
 
   const loadStaff = async () => {
     try {
@@ -160,8 +144,7 @@ export default function StaffPage() {
         manager: '',
         location: '',
         emergencyContact: '',
-        emergencyPhone: '',
-        agency: ''
+        emergencyPhone: ''
       })
     } catch (error) {
       setMessage("Failed to save staff member")
@@ -184,8 +167,7 @@ export default function StaffPage() {
       manager: staffMember.manager || '',
       location: staffMember.location,
       emergencyContact: staffMember.emergencyContact,
-      emergencyPhone: staffMember.emergencyPhone,
-      agency: staffMember.agency || ''
+      emergencyPhone: staffMember.emergencyPhone
     })
     setShowForm(true)
   }
@@ -262,8 +244,7 @@ export default function StaffPage() {
                 manager: '',
                 location: '',
                 emergencyContact: '',
-                emergencyPhone: '',
-                agency: ''
+                emergencyPhone: ''
               })
             }}
             className="btn primary"
@@ -357,7 +338,6 @@ export default function StaffPage() {
                   <th>Name</th>
                   <th>Position</th>
                   <th>Department</th>
-                  <th>Agency</th>
                   <th>Status</th>
                   <th>Salary</th>
                   <th>Hire Date</th>
@@ -378,15 +358,6 @@ export default function StaffPage() {
                       <span className="badge" style={{fontSize: '0.75rem'}}>
                         {staffMember.department}
                       </span>
-                    </td>
-                    <td>
-                      {staffMember.agency ? (
-                        <span className="badge" style={{fontSize: '0.75rem', backgroundColor: 'var(--primary)', color: 'white'}}>
-                          {staffMember.agency}
-                        </span>
-                      ) : (
-                        <span style={{color: 'var(--muted)', fontSize: '0.875rem'}}>—</span>
-                      )}
                     </td>
                     <td>
                       <span 
@@ -571,18 +542,6 @@ export default function StaffPage() {
 
               <div className="row">
                 <div className="form-group">
-                  <label>Agency (Optional)</label>
-                  <select
-                    value={formData.agency}
-                    onChange={(e) => setFormData({...formData, agency: e.target.value})}
-                  >
-                    <option value="">Select Agency</option>
-                    {agencies.map(agency => (
-                      <option key={agency.id} value={agency.name}>{agency.name}</option>
-                    ))}
-                  </select>
-                </div>
-                <div className="form-group">
                   <label>Emergency Contact *</label>
                   <input
                     type="text"
@@ -591,9 +550,6 @@ export default function StaffPage() {
                     required
                   />
                 </div>
-              </div>
-
-              <div className="row">
                 <div className="form-group">
                   <label>Emergency Phone *</label>
                   <input

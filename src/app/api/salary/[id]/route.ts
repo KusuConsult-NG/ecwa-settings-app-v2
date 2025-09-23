@@ -26,8 +26,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       allowances,
       deductions,
       netSalary,
-      payPeriod,
-      agency
+      payPeriod
     } = body
 
     // Validate required fields
@@ -55,7 +54,6 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       deductions: Number(deductions) || 0,
       netSalary: Number(netSalary),
       payPeriod,
-      agency: agency || undefined,
       updatedAt: new Date().toISOString()
     }
 
