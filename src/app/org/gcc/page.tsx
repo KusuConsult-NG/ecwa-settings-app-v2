@@ -62,6 +62,19 @@ export default function CreateGccPage() {
     setMessage("")
     
     try {
+      // Convert selected roles to leaders format expected by API
+      const leaders = selectedRoles.map(roleId => {
+        const role = executiveRoles.find(r => r.id === roleId)
+        return {
+          firstName: role?.title.split(' ')[0] || 'Leader',
+          surname: role?.title.split(' ').slice(1).join(' ') || 'Position',
+          email: email.trim(),
+          role: role?.title || 'Executive',
+          phone: phone || '',
+          address: address || ''
+        }
+      })
+
       const body = {
         name: name.trim(),
         type: 'GCC',
@@ -69,7 +82,7 @@ export default function CreateGccPage() {
         address: address || undefined,
         phone: phone || undefined,
         website: website || undefined,
-        executiveRoles: selectedRoles
+        leaders: leaders
       }
 
       const res = await fetch('/api/org', {

@@ -60,6 +60,16 @@ export default function CreateDccPage() {
     setMessage("")
     
     try {
+      // Create a leader for the DCC
+      const leaders = [{
+        firstName: 'District',
+        surname: 'Leader',
+        email: email.trim(),
+        role: 'District Leader',
+        phone: phone || '',
+        address: address || ''
+      }]
+
       const body = {
         name: name.trim(),
         type: 'DCC',
@@ -67,7 +77,8 @@ export default function CreateDccPage() {
         address: address || undefined,
         phone: phone || undefined,
         website: website || undefined,
-        parentId: selectedGcc
+        parentId: selectedGcc,
+        leaders: leaders
       }
 
       const res = await fetch('/api/org', {

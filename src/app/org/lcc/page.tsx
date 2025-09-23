@@ -60,6 +60,16 @@ export default function CreateLccPage() {
     setMessage("")
     
     try {
+      // Create a leader for the LCC
+      const leaders = [{
+        firstName: 'Local',
+        surname: 'Leader',
+        email: email.trim(),
+        role: 'Local Leader',
+        phone: phone || '',
+        address: address || ''
+      }]
+
       const body = {
         name: name.trim(),
         type: 'LCC',
@@ -67,7 +77,8 @@ export default function CreateLccPage() {
         address: address || undefined,
         phone: phone || undefined,
         website: website || undefined,
-        parentId: selectedDcc
+        parentId: selectedDcc,
+        leaders: leaders
       }
 
       const res = await fetch('/api/org', {
