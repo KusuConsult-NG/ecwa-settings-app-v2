@@ -33,6 +33,9 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  let magicLink = ''
+  let verificationLink = ''
+  
   try {
     const { name, type, description, leader, contact, location, established, status, email } = await request.json()
     
@@ -65,10 +68,10 @@ export async function POST(request: NextRequest) {
         )
         
         // Create magic link with proper URL
-        const magicLink = generateMagicLink(invite.magicToken)
+        magicLink = generateMagicLink(invite.magicToken)
         
         // Create verification link (fallback)
-        const verificationLink = generateVerificationLink(email, invite.authCode)
+        verificationLink = generateVerificationLink(email, invite.authCode)
         
         await sendInviteEmail({
           to: email,
@@ -90,7 +93,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ 
       success: true, 
       data: newAgency, 
-      message: email ? 'Agency created successfully and invitation sent!' : 'Agency created successfully!'
+      message: email ? 'Agency created successfully and invitation sent!' : 'Agency created successfully!',
+      ...(email && { magicLink, verificationLink }) // Include magic links for testing
     }, { status: 201 })
   } catch (error: any) {
     console.error('Error creating agency:', error)
