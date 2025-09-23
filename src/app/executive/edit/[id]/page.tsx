@@ -38,14 +38,12 @@ export default function EditExecutivePage() {
 
   // ECWA Departments (Optional - not all positions have departments)
   const ecwaDepartments = [
-    'Education Department',
-    'Church-Related Ministry (CRM)',
-    'Evangelical Missionary Society (EMS)',
-    'Finance Department',
-    'Medical and Health Department',
-    'Christian Education Department',
-    'Church Discipleship Ministry',
-    'Media Department'
+    'Finance',
+    'Health',
+    'Education',
+    'ESM',
+    'Evangelism',
+    'Media'
   ]
 
   // Religious Titles (Limited to specified options)

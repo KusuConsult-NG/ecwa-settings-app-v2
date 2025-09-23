@@ -25,6 +25,19 @@ export default function LCPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [filterStatus, setFilterStatus] = useState<string>("all")
   const [showForm, setShowForm] = useState(false)
+  const [editingChurch, setEditingChurch] = useState<LocalChurch | null>(null)
+  const [formData, setFormData] = useState({
+    name: '',
+    address: '',
+    phone: '',
+    email: '',
+    pastor: '',
+    memberCount: 0,
+    establishedDate: '',
+    lccId: '',
+    lccName: '',
+    status: 'active' as 'active' | 'inactive' | 'suspended'
+  })
 
   useEffect(() => {
     loadChurches()
@@ -84,6 +97,67 @@ export default function LCPage() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleEdit = (church: LocalChurch) => {
+    setFormData({
+      name: church.name,
+      address: church.address,
+      phone: church.phone,
+      email: church.email,
+      pastor: church.pastor,
+      memberCount: church.memberCount,
+      establishedDate: church.establishedDate,
+      lccId: church.lccId,
+      lccName: church.lccName,
+      status: church.status
+    })
+    setEditingChurch(church)
+    setShowForm(true)
+  }
+
+  const handleDelete = (id: string) => {
+    if (confirm('Are you sure you want to delete this church?')) {
+      setChurches(churches.filter(church => church.id !== id))
+    }
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (editingChurch) {
+      // Update existing church
+      setChurches(churches.map(church => 
+        church.id === editingChurch.id 
+          ? { ...church, ...formData, lastActivity: new Date().toISOString().split('T')[0] }
+          : church
+      ))
+    } else {
+      // Add new church
+      const newChurch: LocalChurch = {
+        id: Date.now().toString(),
+        ...formData,
+        lastActivity: new Date().toISOString().split('T')[0]
+      }
+      setChurches([...churches, newChurch])
+    }
+    resetForm()
+  }
+
+  const resetForm = () => {
+    setFormData({
+      name: '',
+      address: '',
+      phone: '',
+      email: '',
+      pastor: '',
+      memberCount: 0,
+      establishedDate: '',
+      lccId: '',
+      lccName: '',
+      status: 'active'
+    })
+    setEditingChurch(null)
+    setShowForm(false)
   }
 
   const filteredChurches = churches.filter(church => {
@@ -256,13 +330,22 @@ export default function LCPage() {
                   </td>
                   <td style={{padding: "1rem"}}>
                     <div style={{display: "flex", gap: "0.5rem"}}>
-                      <button className="btn secondary btn-sm">
+                      <button 
+                        className="btn secondary btn-sm"
+                        onClick={() => alert(`View ${church.name} - Feature coming soon`)}
+                      >
                         <Eye size={14} />
                       </button>
-                      <button className="btn secondary btn-sm">
+                      <button 
+                        className="btn secondary btn-sm"
+                        onClick={() => handleEdit(church)}
+                      >
                         <Edit size={14} />
                       </button>
-                      <button className="btn danger btn-sm">
+                      <button 
+                        className="btn danger btn-sm"
+                        onClick={() => handleDelete(church.id)}
+                      >
                         <Trash2 size={14} />
                       </button>
                     </div>
@@ -297,22 +380,24 @@ export default function LCPage() {
         }}>
           <div className="card" style={{width: "90%", maxWidth: "600px", maxHeight: "90vh", overflowY: "auto"}}>
             <div style={{display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem"}}>
-              <h3>Add New Local Church</h3>
+              <h3>{editingChurch ? 'Edit Local Church' : 'Add New Local Church'}</h3>
               <button 
                 className="btn secondary btn-sm"
-                onClick={() => setShowForm(false)}
+                onClick={resetForm}
               >
                 ×
               </button>
             </div>
             
-            <form onSubmit={(e) => { e.preventDefault(); setShowForm(false); }}>
+            <form onSubmit={handleSubmit}>
               <div className="row">
                 <div>
                   <label>Church Name *</label>
                   <input
                     type="text"
                     placeholder="ECWA • LC – Church Name"
+                    value={formData.name}
+                    onChange={(e) => setFormData({...formData, name: e.target.value})}
                     required
                   />
                 </div>
@@ -321,6 +406,8 @@ export default function LCPage() {
                   <input
                     type="text"
                     placeholder="Rev. John Doe"
+                    value={formData.pastor}
+                    onChange={(e) => setFormData({...formData, pastor: e.target.value})}
                     required
                   />
                 </div>
@@ -332,6 +419,8 @@ export default function LCPage() {
                   <input
                     type="email"
                     placeholder="church@ecwa.org"
+                    value={formData.email}
+                    onChange={(e) => setFormData({...formData, email: e.target.value})}
                     required
                   />
                 </div>
@@ -340,6 +429,8 @@ export default function LCPage() {
                   <input
                     type="tel"
                     placeholder="+234 803 123 4567"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({...formData, phone: e.target.value})}
                     required
                   />
                 </div>
@@ -350,6 +441,8 @@ export default function LCPage() {
                 <textarea
                   placeholder="123 Church Street, City, State"
                   rows={3}
+                  value={formData.address}
+                  onChange={(e) => setFormData({...formData, address: e.target.value})}
                   required
                 />
               </div>
@@ -357,7 +450,18 @@ export default function LCPage() {
               <div className="row">
                 <div>
                   <label>LCC *</label>
-                  <select required>
+                  <select 
+                    value={formData.lccId}
+                    onChange={(e) => {
+                      const selectedLcc = e.target.value
+                      setFormData({
+                        ...formData, 
+                        lccId: selectedLcc,
+                        lccName: selectedLcc === 'lcc1' ? 'Jos Central LCC' : 'Jos South LCC'
+                      })
+                    }}
+                    required
+                  >
                     <option value="">Select LCC</option>
                     <option value="lcc1">Jos Central LCC</option>
                     <option value="lcc2">Jos South LCC</option>
@@ -367,17 +471,42 @@ export default function LCPage() {
                   <label>Established Date *</label>
                   <input
                     type="date"
+                    value={formData.establishedDate}
+                    onChange={(e) => setFormData({...formData, establishedDate: e.target.value})}
                     required
                   />
                 </div>
               </div>
+
+              <div className="row">
+                <div>
+                  <label>Member Count</label>
+                  <input
+                    type="number"
+                    value={formData.memberCount}
+                    onChange={(e) => setFormData({...formData, memberCount: Number(e.target.value)})}
+                    min="0"
+                  />
+                </div>
+                <div>
+                  <label>Status</label>
+                  <select
+                    value={formData.status}
+                    onChange={(e) => setFormData({...formData, status: e.target.value as 'active' | 'inactive' | 'suspended'})}
+                  >
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                    <option value="suspended">Suspended</option>
+                  </select>
+                </div>
+              </div>
               
               <div className="form-actions">
-                <button type="button" className="btn secondary" onClick={() => setShowForm(false)}>
+                <button type="button" className="btn secondary" onClick={resetForm}>
                   Cancel
                 </button>
                 <button type="submit" className="btn primary">
-                  Add Church
+                  {editingChurch ? 'Update Church' : 'Add Church'}
                 </button>
               </div>
             </form>

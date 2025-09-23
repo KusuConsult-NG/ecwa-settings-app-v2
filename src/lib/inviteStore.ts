@@ -67,3 +67,4 @@ export function getAllInvites(): Invite[] {
 export function deleteInvite(id: string): boolean {
   return invites.delete(id)
 }
+

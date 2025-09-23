@@ -58,3 +58,4 @@ GMAIL_APP_PASSWORD=your_16_character_app_password
 - **App passwords are safer** than regular passwords
 - **You can revoke App passwords** anytime from Google Account settings
 - **Each app gets its own password** - if compromised, only that app is affected
+

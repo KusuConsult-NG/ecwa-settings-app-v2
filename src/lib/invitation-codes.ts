@@ -22,3 +22,4 @@ export function deleteInvitationCode(code: string) {
 export function getAllInvitationCodes() {
   return invitationCodes
 }
+

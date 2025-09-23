@@ -119,6 +119,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   <MessageSquare className="nav-icon" size={20} />
                   <span>Queries</span>
                 </a>
+                <a href="/hr/salary" className="nav-link">
+                  <DollarSign className="nav-icon" size={20} />
+                  <span>Salary Management</span>
+                </a>
               </div>
 
               {/* Leadership & Administration */}
