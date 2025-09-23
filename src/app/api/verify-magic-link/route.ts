@@ -1,43 +1,39 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from "next/server"
+import { verifyInviteJwt } from "@/lib/jwt"
 
+export const runtime = "nodejs"
 export const dynamic = 'force-dynamic'
 
-export async function POST(request: NextRequest) {
+export async function POST(req: Request) {
   try {
-    const { token } = await request.json()
-
+    const { token } = await req.json() as { token?: string }
     if (!token) {
-      return NextResponse.json({
-        success: false,
-        message: 'Magic link token is required'
-      }, { status: 400 })
+      return NextResponse.json({ success: false, message: "Missing token" }, { status: 400 })
     }
 
-    console.log('Verifying magic link token:', token)
+    // Token must include at least: email (lowercased), name (optional), inviteId/teamId (optional)
+    const payload = verifyInviteJwt<{ email: string; name?: string; inviteId?: string; teamId?: string }>(token)
+    if (!payload?.email) {
+      return NextResponse.json({ success: false, message: "Invalid or expired magic link" }, { status: 401 })
+    }
 
-    // WORKING FIX: Accept ANY token for immediate functionality
-    // This provides immediate functionality while we resolve the KV store issues
+    // (Optional) You could check DB here that inviteId is still active/not consumed
+
     return NextResponse.json({
       success: true,
-      message: 'Magic link verified successfully!',
+      message: "Magic link verified successfully!",
       invite: {
-        id: 'working-invite-' + Date.now(),
-        email: 'test@example.com',
-        name: 'Test User',
-        role: 'Test Role',
-        organizationId: 'working-org',
-        organizationName: 'Test Organization',
-        inviterName: 'System Administrator'
+        id: payload.inviteId || 'jwt-invite-' + Date.now(),
+        email: payload.email,
+        name: payload.name || "User",
+        role: "Member",
+        organizationId: payload.teamId || "default-org",
+        organizationName: "Test Organization",
+        inviterName: "System Administrator"
       }
     })
-
-  } catch (error: any) {
-    console.error('Magic link verification error:', error)
-    return NextResponse.json({
-      success: false,
-      message: 'Internal server error',
-      error: error.message
-    }, { status: 500 })
+  } catch (e) {
+    return NextResponse.json({ success: false, message: "Invalid or expired magic link" }, { status: 401 })
   }
 }
 

@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
       email: newUser.email,
       role: newUser.role,
       organization: newUser.organization
-    }, '7d') // 7 days
+    })
 
     // Return success response
     const response = NextResponse.json({

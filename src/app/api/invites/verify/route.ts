@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
       email: invite.email,
       orgId: invite.orgId,
       role: invite.role
-    }, '1h') // 1 hour expiry
+    })
 
     return NextResponse.json({
       success: true,

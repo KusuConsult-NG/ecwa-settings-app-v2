@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Token, name, and password are required' }, { status: 400 })
     }
 
-    const payload = verify<{ inviteId: string, email: string, orgId: string, role: string }>(token)
+    const payload = verify(token) as { inviteId: string, email: string, orgId: string, role: string } | null
     if (!payload) {
       return NextResponse.json({ error: 'Invalid or expired token' }, { status: 401 })
     }
