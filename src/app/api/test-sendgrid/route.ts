@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { sendInviteEmail } from '@/lib/sendgrid-service'
+import { generateMagicLink, generateVerificationLink } from '@/lib/url-utils'
 
 export const dynamic = 'force-dynamic'
 
@@ -26,8 +27,8 @@ export async function POST(request: NextRequest) {
       organizationName: 'Test Organization',
       inviterName: 'Test Admin',
       authCode: '123456',
-      magicLink: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/verify-invite?token=test_token_123456`,
-      verificationLink: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/accept?email=${encodeURIComponent(email)}&code=123456`
+      magicLink: generateMagicLink('test_token_123456'),
+      verificationLink: generateVerificationLink(email, '123456')
     })
 
     return NextResponse.json({
