@@ -1,5 +1,6 @@
 import crypto from 'crypto'
 import { kv } from './kv'
+import { signInviteJwt, verifyInviteJwt } from './jwt'
 
 export interface MagicInvite {
   id: string
@@ -26,7 +27,17 @@ export async function createMagicInvite(
 ): Promise<MagicInvite> {
   const id = crypto.randomUUID()
   const authCode = Math.floor(100000 + Math.random() * 900000).toString() // 6-digit code
-  const magicToken = crypto.randomBytes(32).toString('hex') // 64-character token
+  
+  // Generate JWT token instead of random hex
+  const magicToken = signInviteJwt({
+    email: email.toLowerCase(),
+    name,
+    role,
+    organizationId,
+    organizationName,
+    inviteId: id
+  }, 60 * 30) // 30 minutes expiration
+  
   const expiresAt = Date.now() + (24 * 60 * 60 * 1000) // 24 hours
   
   const invite: MagicInvite = {
@@ -78,16 +89,17 @@ export async function getMagicInviteByToken(token: string): Promise<MagicInvite 
   try {
     console.log('Looking up magic token:', token)
     
-    // First get the invite ID from the token
-    const inviteId = await kv.get(`magic_token:${token}`)
-    console.log('Found invite ID:', inviteId)
-    
-    if (!inviteId) {
-      console.log('No invite ID found for token:', token)
+    // Verify JWT token and extract payload
+    const payload = verifyInviteJwt(token)
+    if (!payload || !payload.inviteId) {
+      console.log('Invalid JWT token or missing inviteId')
       return undefined
     }
     
-    // Then get the full invite data
+    const inviteId = payload.inviteId
+    console.log('Found invite ID from JWT:', inviteId)
+    
+    // Get the full invite data from KV store
     const data = await kv.get(`magic_invite:${inviteId}`)
     console.log('Found invite data:', data ? 'Yes' : 'No')
     
@@ -99,9 +111,9 @@ export async function getMagicInviteByToken(token: string): Promise<MagicInvite 
     const invite: MagicInvite = JSON.parse(data)
     console.log('Parsed invite:', { id: invite.id, email: invite.email, consumed: invite.consumed, expiresAt: invite.expiresAt })
     
-    // Check if expired
+    // Check if expired (JWT expiration is handled by verifyInviteJwt, but check KV store expiration too)
     if (Date.now() > invite.expiresAt) {
-      console.log('Invite expired, cleaning up')
+      console.log('Invite expired in KV store, cleaning up')
       await kv.delete(`magic_invite:${inviteId}`)
       await kv.delete(`magic_token:${token}`)
       return undefined
