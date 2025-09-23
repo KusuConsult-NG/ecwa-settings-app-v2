@@ -76,18 +76,32 @@ export async function getMagicInviteById(id: string): Promise<MagicInvite | unde
 
 export async function getMagicInviteByToken(token: string): Promise<MagicInvite | undefined> {
   try {
+    console.log('Looking up magic token:', token)
+    
     // First get the invite ID from the token
     const inviteId = await kv.get(`magic_token:${token}`)
-    if (!inviteId) return undefined
+    console.log('Found invite ID:', inviteId)
+    
+    if (!inviteId) {
+      console.log('No invite ID found for token:', token)
+      return undefined
+    }
     
     // Then get the full invite data
     const data = await kv.get(`magic_invite:${inviteId}`)
-    if (!data) return undefined
+    console.log('Found invite data:', data ? 'Yes' : 'No')
+    
+    if (!data) {
+      console.log('No invite data found for ID:', inviteId)
+      return undefined
+    }
     
     const invite: MagicInvite = JSON.parse(data)
+    console.log('Parsed invite:', { id: invite.id, email: invite.email, consumed: invite.consumed, expiresAt: invite.expiresAt })
     
     // Check if expired
     if (Date.now() > invite.expiresAt) {
+      console.log('Invite expired, cleaning up')
       await kv.delete(`magic_invite:${inviteId}`)
       await kv.delete(`magic_token:${token}`)
       return undefined
@@ -95,9 +109,11 @@ export async function getMagicInviteByToken(token: string): Promise<MagicInvite 
     
     // Check if consumed
     if (invite.consumed) {
+      console.log('Invite already consumed')
       return undefined
     }
     
+    console.log('Returning valid invite')
     return invite
   } catch (error) {
     console.error('Error getting magic invite by token:', error)

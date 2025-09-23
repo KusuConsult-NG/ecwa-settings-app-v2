@@ -14,9 +14,14 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
+    console.log('Verifying magic link token:', token)
+
     // Check if magic link exists and is valid
     const invite = await getMagicInviteByToken(token)
+    console.log('Magic invite found:', invite ? 'Yes' : 'No')
+    
     if (!invite) {
+      console.log('Magic link not found or expired for token:', token)
       return NextResponse.json({
         success: false,
         message: 'Invalid or expired magic link'
